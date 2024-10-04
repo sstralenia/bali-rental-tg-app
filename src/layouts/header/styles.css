@@ -1,0 +1,11 @@
+.navigation-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  gap: 25px;
+}
+
+a.active {
+  text-decoration: underline;
+}
