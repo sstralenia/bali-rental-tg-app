@@ -1,6 +1,8 @@
-import { Container, Box, Title, Modal } from "@mantine/core";
+import { Container, Box, Title, Modal, Text, Group } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 import { useDisclosure } from '@mantine/hooks';
 import { Carousel } from '@mantine/carousel';
+import { IconChevronLeft } from '@tabler/icons-react';
 import { useMemo } from "react";
 import { Property } from "../../types";
 import { pluralizeRooms } from "../../utils/rooms";
@@ -8,6 +10,7 @@ import { getHouseType } from "../../utils/house-type";
 import { capitalize } from "../../utils/string";
 
 function PropertyPage() {
+  const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
   const property: Property = useMemo(() => {
     try {
@@ -20,7 +23,11 @@ function PropertyPage() {
   }, []);
 
   return (
-    <Container size='lg' style={{ paddingBottom: '100px' }}>
+    <Container size='lg' style={{ paddingBottom: '100px', overflow: 'hidden' }}>
+      <Group onClick={() => navigate(-1)} style={{ padding: '10px 0px', gap: 2, marginBottom: 10 }}>
+        <IconChevronLeft size={30} />
+        <Text>Back</Text>
+      </Group>
       <Carousel
         withIndicators
         withControls={false}
