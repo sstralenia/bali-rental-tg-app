@@ -1,4 +1,5 @@
 import { FC, SyntheticEvent, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Text,
   Box,
@@ -15,13 +16,14 @@ type Props = {
 }
 
 const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist }) => {
+  const navigate = useNavigate();
   const handleShortlist = useCallback((e: SyntheticEvent) => {
     e.stopPropagation();
     onShortlist(property)
   }, [onShortlist, property]);
   const handleClick = useCallback(() => {
     localStorage.setItem('selectedProperty', JSON.stringify(property));
-    window.location.href = '/property-detail';
+    navigate('/property-detail');
   },[property]);
 
   return (
