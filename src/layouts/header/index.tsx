@@ -9,8 +9,8 @@ import './styles.css'
 
 export default function Header() {
   return (
-    <AppShell.Header height={{ base: 50, md: 70 }} p="md">
-      <Container style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+    <AppShell.Header p="md">
+      <Container style={{ display: 'flex', alignItems: 'center', height: '100%', justifyContent: 'center' }}>
         <List className='navigation-list'>
           <List.Item>
             <NavLink to="/" >

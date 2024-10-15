@@ -31,14 +31,17 @@ export default function useShortlistedProperties() {
   }, []);
 
   const toggleProperty = (property:  Property) => {
+    console.log('toggleProperty', property);
     const index = properties.findIndex(p => p.id === property.id);
     const copy = [...properties];
 
     if (index === -1) {
-      copy.splice(index, 1);
-    } else {
       copy.push(property)
+    } else {
+      copy.splice(index, 1);
     }
+
+    console.log('copy', copy)
 
     setProperties(copy);
     storeProperties(copy)

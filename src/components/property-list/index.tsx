@@ -1,17 +1,39 @@
-import {
-  Flex,
-} from '@mantine/core';
+import { FC, useMemo } from 'react';
+import { Grid } from '@mantine/core';
 import PropertyItem from '../property';
-import { FC } from 'react';
+import useShortlistedProperties from '../../hooks/shortlistedProperties';
 import { Property } from '../../types';
 
-const PropertyList: FC<{ properties: Property[] }> = ({ properties }) => {
+type Props = {
+  properties: Property[]
+  columns?: number
+}
+
+const PropertyList: FC<Props> = ({ properties, columns = 1 }) => {
+  const { properties: shortlistedProperties, toggle: toggleShortlistProperty } = useShortlistedProperties();
+
+  const shortlistedPropertiesMap = useMemo(() => {
+    return shortlistedProperties.reduce((acc, property) => acc.set(property.id, property), new Map<string, Property>());
+  }, [shortlistedProperties]);
+
   return (
-    <Flex direction="row" wrap="wrap" gap={20} >
+    <Grid id="properties-list">
       {
-        properties.map(p => <PropertyItem property={p} key={p.id} shortlisted={false} onShortlist={() => {}}/>)
+        properties.map(p => 
+          <Grid.Col
+            key={p.id}
+            span={12 / columns} 
+          >
+            <PropertyItem
+              property={p}
+              key={p.id}
+              shortlisted={shortlistedPropertiesMap.has(p.id)}
+              onShortlist={toggleShortlistProperty}
+            />
+          </Grid.Col>
+        )
       }
-    </Flex>
+    </Grid>
   )
 }
 

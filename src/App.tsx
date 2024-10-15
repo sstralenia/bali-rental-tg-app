@@ -1,5 +1,6 @@
-import { MantineProvider } from '@mantine/core';
+import { MantineProvider, createTheme } from '@mantine/core';
 import '@mantine/core/styles.css';
+import '@mantine/carousel/styles.css';
 
 import {
   createBrowserRouter,
@@ -8,6 +9,13 @@ import {
 
 import Layout from './layouts/main';
 import SearchPage from './pages/search';
+import ShortlistPage from './pages/shortlist';
+import PropertyPage from './pages/property';
+import './App.css';
+
+const theme = createTheme({
+  fontFamily: 'Inter, sans-serif',
+});
 
 const router = createBrowserRouter([
   {
@@ -16,11 +24,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/shortlisted',
-    element: <div>Shortlist</div>//<Layout><SearchPage/></Layout>
+    element: <Layout><ShortlistPage/></Layout>
   },
   {
-    path: '/properties/:id',
-    element: <div>Property</div>//<Layout><SearchPage/></Layout>
+    path: '/property-detail',
+    element: <Layout><PropertyPage/></Layout>
   },
 
 ]);
@@ -28,7 +36,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <MantineProvider>
+    <MantineProvider theme={theme}>
       <RouterProvider router={router} />
     </MantineProvider>
   )

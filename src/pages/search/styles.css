@@ -1,0 +1,8 @@
+.loader.center {
+  position: absolute;
+}
+
+.loader.bottom {
+  position: relative;
+  margin-bottom: 40px;
+}

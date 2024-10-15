@@ -2,25 +2,28 @@ import {
   AppShell,
   useMantineTheme,
 } from '@mantine/core';
-import Header from './header';
+import NavigationBar from '../components/navigation-bar';
+import { FC, ReactNode } from 'react';
 
-function Main({ children }) {
+const Main: FC<{ children: ReactNode }> = ({ children }) => {
   const theme = useMantineTheme();
 
   return (
     <AppShell
-      header={{ height: 60 }}
       styles={{
         main: {
-          background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
-          width: '100%',
+          background: theme.colors.gray[0],
+          width: '100vw',
+          backgroundColor: '#F2F3F5',
+          paddingTop: 20,
+          paddingBottom: 80,
         },
       }}
     > 
-      <Header />
-      <AppShell.Main style={{ width: '100vw', paddingTop: '140px'}}>
+      <AppShell.Main>
         {children}
       </AppShell.Main>
+      <NavigationBar />
     </AppShell>
   )
 }

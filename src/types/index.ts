@@ -1,8 +1,8 @@
 export type Property = {
+  id: string;
   location: string;
   created_at: string;
   house_type: string;
-  id: number;
   link: string;
   media_amount: number;
   message_author: string | null;
@@ -11,4 +11,8 @@ export type Property = {
   rooms: number;
   text: string;
   user_id: number;
+  media: {
+    url: string;
+    alt: string;
+  }[];
 }

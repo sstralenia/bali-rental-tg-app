@@ -1,123 +1,103 @@
-import { useEffect, useState, useCallback, memo } from 'react';
+import { useEffect, useState, memo, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import {
-  Flex,
-  TextInput,
-  Button,
-  Card,
-  Select,
-  Box,
-  Title,
-  Text,
-  Pagination,
-  LoadingOverlay,
   Container,
+  Loader,
+  Center,
+  Text,
+  LoadingOverlay
 } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import usePropertiesSearch from '../../hooks/properties';
 import PropertyList from '../../components/property-list';
-import { Property } from '../../types';
+import { FilterValues } from './types';
+import FiltersButton from './filters-button';
+import FiltersModal from './filters-modal';
 
-const locations = [
-  { value: 'canggu', label: 'Canguu' },
-  { value: 'kuta', label: 'Kuta' },
-  { value: 'seminyak', label: 'Seminyak' },
-  { value: 'uluwatu', label: 'Uluwatu' },
-  { value: 'bukit', label: 'Bukit' },
-  { value: 'jimbaran', label: 'Jimbaran' },
-  { value: 'ubud', label: 'Ubud' },
-];
+const ITEMS_PER_PAGE = 6;
 
 function SearchPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({ paymentFrom: 0, paymentTo: 1000000, industryId: null });
   const [activePage, setPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const { query, properties } = usePropertiesSearch();
+  const { query: queryProperties, queryNext: queryNextProperties, totalItems, properties, isLoading } = usePropertiesSearch();
+  const [filters, setFilters] = useState<FilterValues>({});
+  const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
 
-  const perPage = 6;
-  const totalPages = Math.floor(totalItems / perPage);
-  const isPaginationShown = totalPages > 0;
+  const handleFiltersApply = useCallback((filters: FilterValues) => {
+    setFilters(filters);
+    setPage(1);
+    closeFiltersModal();
+  }, [setFilters, setPage, closeFiltersModal]);
 
-  useEffect(() => { 
-    const fetchData = async () => {
-      setIsLoading(true);
-      await query({ query: searchTerm, pagination: { page: activePage, perPage } });
-      setIsLoading(false);
+  const fetchData = useCallback(() => setPage((page) => page + 1), [setPage]);
+
+  console.log('Render seach page', properties.length);
+
+  useEffect(() => {
+    const query = {
+      location: filters.location ?? undefined,
+      priceFrom: filters.priceFrom ? parseInt(filters.priceFrom) : undefined,
+      priceTo: filters.priceTo ? parseInt(filters.priceTo) : undefined,
+      roomsFrom: filters.roomsFrom ? parseInt(filters.roomsFrom) : undefined,
+      roomsTo: filters.roomsTo ? parseInt(filters.roomsTo) : undefined,
     };
 
-    fetchData();
-  }, [setIsLoading, query, searchTerm, activePage]);
+    if (activePage === 1) {
+      queryProperties({ query, pagination: { page: activePage, perPage: ITEMS_PER_PAGE } });
+    } else {
+      queryNextProperties({ query, pagination: { page: activePage, perPage: ITEMS_PER_PAGE } });
+    }
+  }, [queryProperties, queryNextProperties, activePage, filters]);
+
+  const filtersModal = useMemo(() => {
+    return (
+      <FiltersModal
+        opened={isFiltersModalsOpened}
+        onClose={closeFiltersModal}
+        onApply={handleFiltersApply}
+      />
+    );
+  }, [isFiltersModalsOpened, closeFiltersModal, handleFiltersApply]);
+  const loader = useMemo(() => <Center><Loader size="sm"/></Center>, []);
+  const endMessage = useMemo(() => {
+    if (properties.length === 0) {
+      return;
+    }
+
+   return (
+      <Text mt="xs" style={{ textAlign: 'center', fontWeight: 'bold' }}>
+        Это все, что у нас есть
+      </Text>
+   );
+  }, [properties.length]);
 
   return (
-    <Container size="lg">
-      <Flex
-        direction="row"
-        w="100%"
-        gap={20}
-      >
-        <Flex w="25%" style={{ alignItems: 'flex-start' }}>
-          <Card withBorder w='100%'>
-            <Flex justify="space-between">
-              <Title order={4}>Фильтры</Title>
-              <Box>
-                <Text>Сбросить все</Text>
-              </Box>
-            </Flex>
-            <Select
-              className="industry-select"
-              label="Локация"
-              placeholder="Выберите локацию"
-              data={locations}
-              mt="xl"
+    <Container>
+      <FiltersButton onClick={openFiltersModal}/>
+      {
+        isLoading && properties.length === 0 && <LoadingOverlay visible />
+      }
+      {
+        properties.length > 0 && (
+          <InfiniteScroll
+            dataLength={properties.length}
+            next={fetchData}
+            hasMore={properties.length < totalItems}
+            loader={loader}
+            endMessage={endMessage}
+            style={{ overflow: 'hidden' }}
+          >
+            <PropertyList
+              properties={properties}
+              columns={1}
             />
-            <Select
-              className="industry-select"
-              label="Кол-во комнат"
-              placeholder="От"
-              data={[]}
-              mt="sm"
-            />
-            <Select
-              className="industry-select"
-              placeholder="До"
-              data={[]}
-              mt="xs"
-            />
-            <Select
-              className="industry-select"
-              label="Цена"
-              placeholder="От"
-              data={[]}
-              mt="sm"
-            />
-            <Select
-              className="industry-select"
-              placeholder="До"
-              data={[]}
-              mt="xs"
-            />
-            <Button
-              fullWidth
-              onClick={() => {}}
-              mt="sm"
-            >
-              Применить
-            </Button>
-          </Card>
-        </Flex>
-        <Flex
-          w={'70%'}
-          direction="column"
-        >
-          <Flex direction="column" pos="relative">
-            { isLoading && <LoadingOverlay visible={true}/> }
-            <div style={{ marginBottom: '40px' }}>
-              <PropertyList properties={properties}/>
-            </div>
-            { isPaginationShown && <Pagination value={activePage}  total={totalPages} /> }
-          </Flex>
-        </Flex>
-      </Flex>
+          </InfiniteScroll>
+        )
+      }
+
+      {
+        createPortal(filtersModal, document.body)
+      }
     </Container>
   )
 }
