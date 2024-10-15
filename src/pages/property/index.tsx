@@ -1,4 +1,4 @@
-import { Container, Box, Title, Modal, Text, Badge, Group } from "@mantine/core";
+import { Container, Box, Title, Modal } from "@mantine/core";
 import { useDisclosure } from '@mantine/hooks';
 import { Carousel } from '@mantine/carousel';
 import { useMemo } from "react";
@@ -18,10 +18,6 @@ function PropertyPage() {
       return {};
     }
   }, []);
-
-  const badges = Array(10)
-  .fill(0)
-  .map((_, index) => <Badge key={index}>Badge {index}</Badge>);
 
   return (
     <Container size='lg' style={{ paddingBottom: '100px' }}>
