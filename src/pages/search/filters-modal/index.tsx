@@ -8,12 +8,13 @@ import {
   Box,
   Container,
   Group,
+  Checkbox
 } from '@mantine/core';
 import useLocations from '../../../hooks/locations';
 import { FilterValues } from '../types';
 import { capitalize } from "../../../utils/string";
 import './styles.css';
-import { IconX } from "@tabler/icons-react";
+import { IconX } from '@tabler/icons-react';
 
 const rooms = [
   { value: '1', label: '1' },
@@ -36,6 +37,7 @@ type Props = {
 const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
   const [filters, setFilters] = useState<FilterValues>({});
   const { locations } = useLocations();
+  console.log('filters', filters)
 
   const roomsFromOptions = useMemo(() => {
     return rooms.filter(room => !filters.roomsTo || parseInt(room.value) <= parseInt(filters.roomsTo));
@@ -52,12 +54,19 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
       location: filters.location || undefined,
       roomsFrom: filters.roomsFrom || undefined,
       roomsTo: filters.roomsTo || undefined,
-      priceFrom: filters.priceFrom?.toString() || undefined,
-      priceTo: filters.priceTo?.toString() || undefined,
+      priceFrom: filters.isLookForNeighboor ? undefined : filters.priceFrom?.toString() || undefined,
+      priceTo: filters.isLookForNeighboor ? undefined : filters.priceTo?.toString() || undefined,
+      isLookForNeighboor: filters.isLookForNeighboor || false,
     });
   }, [filters.location, filters.roomsFrom, filters.roomsTo, filters.priceFrom, filters.priceTo, onApply]);
   const handleReset = useCallback(() => {
-    setFilters({});
+    setFilters({
+      location: null,
+      roomsFrom: null,
+      roomsTo: null,
+      priceFrom: null,
+      priceTo: null,
+    });
     onApply({});
   }, [onApply]);
 
@@ -91,6 +100,7 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
           placeholder="От"
           data={roomsFromOptions}
           value={filters.roomsFrom}
+          disabled={filters.isLookForNeighboor}
           onChange={(roomsFrom) => setFilters((current) => ({ ...current, roomsFrom }))}
           mt="xs"
         />
@@ -98,7 +108,13 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
           placeholder="До"
           data={roomsToOptions}
           value={filters.roomsTo}
+          disabled={filters.isLookForNeighboor}
           onChange={(roomsTo) => setFilters((current) => ({ ...current, roomsTo }))}
+        />
+        <Checkbox
+          checked={filters.isLookForNeighboor}
+          onChange={e => setFilters((current) => ({ ...current, isLookForNeighboor: e.currentTarget.checked }))}
+          label="Ищу соседа"
         />
         <Input.Wrapper label="Цена (в IDR)" mt="xs">
           <Input
@@ -115,22 +131,24 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
           value={filters.priceTo ?? ''}
           onChange={e => setFilters((current) => ({ ...current, priceTo: e.target.value }))}
         />
-        <Button
-          fullWidth
-          onClick={handleApply}
-          mt="sm"
-          color="#FF5A5F"
-        >
-          Применить
-        </Button>
-        <Button
-          fullWidth
-          onClick={handleReset}
-          variant="outline"
-          color="#767676"
-        >
-          Сбросить все
-        </Button>
+        <Group mt="sm">
+          <Button
+            onClick={handleApply}
+            color="#FF5A5F"
+            flex="1"
+          >
+            Применить
+          </Button>
+          <Button
+            fullWidth
+            onClick={handleReset}
+            variant="outline"
+            color="#767676"
+            flex="1"
+          >
+            Сбросить все
+          </Button>
+        </Group>
       </Stack>
     </Container>
   )

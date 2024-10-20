@@ -1,10 +1,12 @@
-export function pluralizeRooms(rooms: number): string {
+export function formatRooms(rooms: number): string {
   switch (true) {
     case rooms === 1:
-      return 'комната';
+      return '1 комната';
     case rooms > 1 && rooms < 5:
-      return 'комнаты';
+      return `${rooms} комнаты`;
+    case rooms === 69:
+      return 'Ищу соседа'
     default:
-      return 'комнат';
+      return `${rooms} комнат`;
   }
 }

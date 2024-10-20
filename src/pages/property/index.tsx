@@ -1,33 +1,59 @@
-import { Container, Box, Title, Modal, Text, Group } from "@mantine/core";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from 'react';
+import { useNavigate, useParams,  } from 'react-router-dom';
+import { Container, Box, Title, Modal, Text, Group, Button, LoadingOverlay } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Carousel } from '@mantine/carousel';
 import { IconChevronLeft } from '@tabler/icons-react';
-import { useMemo } from "react";
-import { Property } from "../../types";
-import { pluralizeRooms } from "../../utils/rooms";
-import { getHouseType } from "../../utils/house-type";
-import { capitalize } from "../../utils/string";
+import useProperty from '../../hooks/property';
+import { formatRooms } from '../../utils/rooms';
+import { getHouseType } from '../../utils/house-type';
+import { capitalize } from '../../utils/string';
+import { formatMoney } from '../../utils/money';
+
+const APP_URL = 'https://t.me/carpe_on_diet_bot/carpe_on_diet';
 
 function PropertyPage() {
   const navigate = useNavigate();
+  const { propertyId } = useParams();
+  const { isLoading, property, query } = useProperty();
   const [opened, { open, close }] = useDisclosure(false);
-  const property: Property = useMemo(() => {
-    try {
-      const propertyJSON = localStorage.getItem('selectedProperty');
-      return JSON.parse(propertyJSON ?? '{}');
-    } catch (err) {
-      console.error(err)
-      return {};
+  const canGoBack = window.history.length > 2;
+
+  const handleContact = () => {
+    window.location.href = 'tg://resolve?domain=chill_lime';
+  };
+
+  const handleShare = () => {
+    if (!property) {
+      return;
     }
-  }, []);
+
+    const url = `${APP_URL}?startapp=propertyId_${propertyId}`;
+    const text = `${capitalize(property?.location)}, ${getHouseType(property.house_type)}
+${formatRooms(property.rooms)}
+${formatMoney(property.price, 'IDR')}
+`;
+    window.location.href = `https://t.me/share/url?url=${url}&text=${text}`;
+  };
+
+  useEffect(() => {
+    query(propertyId ?? '');
+  }, [propertyId, query]);
+
+  if (isLoading || !property) {
+    return <LoadingOverlay visible />
+  }
 
   return (
     <Container size='lg' style={{ paddingBottom: '100px', overflow: 'hidden' }}>
-      <Group onClick={() => navigate(-1)} style={{ padding: '10px 0px', gap: 2, marginBottom: 10 }}>
-        <IconChevronLeft size={30} />
-        <Text>Back</Text>
-      </Group>
+      {
+        canGoBack && (
+          <Group onClick={() => navigate(-1)} style={{ padding: '10px 0px', gap: 2, marginBottom: 10, position: 'relative', left: -10 }}>
+            <IconChevronLeft size={30} />
+            <Text>Back</Text>
+          </Group>
+        )
+      }
       <Carousel
         withIndicators
         withControls={false}
@@ -46,21 +72,40 @@ function PropertyPage() {
           ))
         }
       </Carousel>
-      <Box mb="sm">
+      <Box mb="3">
         <Title order={2}>
           {capitalize(property.location)}, {getHouseType(property.house_type)}
         </Title>
         <Title order={4}>
-          {property.rooms} {pluralizeRooms(property.rooms)}
+          {formatRooms(property.rooms)}
+        </Title>
+      </Box>
+      <Box mb="xs">
+        <Title order={2}>
+          { formatMoney(property.price, 'IDR') }
         </Title>
       </Box>
       <Box mb="lg" dangerouslySetInnerHTML={{ __html: property.text.replace(/\n/g, '<br/>') }} />
-      <Box>
-        <Title order={1}>
-          {property.price} IDR
-        </Title>
-      </Box>
 
+      <Group>
+        <Button
+          onClick={handleContact}
+          mt="sm"
+          mb="xs"
+          color="#FF5A5F"
+          flex="1"
+        >
+          Написать
+        </Button>
+        <Button
+          onClick={handleShare}
+          variant="outline"
+          color="#767676"
+          flex="1"
+        >
+          Поделиться
+        </Button>
+      </Group>
 
       <Modal.Root opened={opened} onClose={close} centered>
         <Modal.Overlay style={{ background: 'var(--overlay-bg, rgba(0, 0, 0, 0.8))' }}/>

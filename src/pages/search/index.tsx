@@ -14,10 +14,13 @@ import PropertyList from '../../components/property-list';
 import { FilterValues } from './types';
 import FiltersButton from './filters-button';
 import FiltersModal from './filters-modal';
+import { useNavigate } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 6;
+const LOOK_FOR_NEIGHBOR_ROOMS_NUMBER = 69;
 
 function SearchPage() {
+  const navigate = useNavigate();
   const [activePage, setPage] = useState(1);
   const { query: queryProperties, queryNext: queryNextProperties, totalItems, properties, isLoading } = usePropertiesSearch();
   const [filters, setFilters] = useState<FilterValues>({});
@@ -32,14 +35,45 @@ function SearchPage() {
   const fetchData = useCallback(() => setPage((page) => page + 1), [setPage]);
 
   console.log('Render seach page', properties.length);
+  
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    /**
+     * tgWebAppStartParam is passed in query if bot is run
+     * as https://t.me/carpe_on_diet_bot/carpe_on_diet?startapp=propertyId_664
+     */
+    const tgWebAppStartParam = urlParams.get('tgWebAppStartParam');
+
+    if (!tgWebAppStartParam) {
+      return;
+    }
+
+    /**
+     * Values are passed as key_value.
+     * E.g. propertyId_664
+     */
+    const [key, value] = tgWebAppStartParam.split('_');
+
+    if (key === 'propertyId') {
+      navigate(`/property/${value}`);
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const query = {
       location: filters.location ?? undefined,
       priceFrom: filters.priceFrom ? parseInt(filters.priceFrom) : undefined,
       priceTo: filters.priceTo ? parseInt(filters.priceTo) : undefined,
-      roomsFrom: filters.roomsFrom ? parseInt(filters.roomsFrom) : undefined,
-      roomsTo: filters.roomsTo ? parseInt(filters.roomsTo) : undefined,
+      roomsFrom: filters.isLookForNeighboor
+        ? LOOK_FOR_NEIGHBOR_ROOMS_NUMBER
+        : filters.roomsFrom
+          ? parseInt(filters.roomsFrom)
+          : undefined,
+      roomsTo: filters.isLookForNeighboor 
+        ? LOOK_FOR_NEIGHBOR_ROOMS_NUMBER 
+        : filters.roomsTo
+          ? parseInt(filters.roomsTo)
+          : undefined,
     };
 
     if (activePage === 1) {

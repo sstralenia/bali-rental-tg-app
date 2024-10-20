@@ -90,6 +90,19 @@ function buildWhereClause(query: Query): Record<string, unknown> {
   return whereClause;
 }
 
+function mapProperty(p: Property): Property {
+  const media = Array.from({ length: p.media_amount }).map((_, i) => ({
+    url: `${MEDIA_URL}/${p.message_id}/${i + 1}.jpeg`,
+    alt: `Property ${p.id} image ${i + 1}`,
+  }));
+
+  return {
+    ...p,
+    id: String(p.id),
+    media,
+  };
+}
+
 export async function fetchProperties({ query, pagination }: { query: Query, pagination: Pagination }): Promise<FetchPropertiesResult> {
   // const cacheKey = JSON.stringify({ query, pagination });
 
@@ -107,18 +120,7 @@ export async function fetchProperties({ query, pagination }: { query: Query, pag
   });
 
   const properties = result.data.tg_announcement;
-  const mappedProperties = properties.map(p => {
-    const media = Array.from({ length: p.media_amount }).map((_, i) => ({
-      url: `${MEDIA_URL}/${p.message_id}/${i + 1}.jpeg`,
-      alt: `Property ${p.id} image ${i + 1}`,
-    }));
-
-    return {
-      ...p,
-      id: String(p.id),
-      media,
-    };
-  });
+  const mappedProperties = properties.map(mapProperty);
 
   // cache.set(cacheKey, mappedProperties);
 
@@ -146,4 +148,46 @@ export async function fetchLocations(): Promise<string[]> {
   });
 
   return result.data.tg_announcement.map(p => p.location);
+}
+
+const FETCH_PROPERTY_QUERY = gql`
+  query Q ($where: tg_announcement_bool_exp) {
+    tg_announcement(limit: 1, offset: 0, where: $where) {
+      location
+      created_at
+      house_type
+      id
+      link
+      media_amount
+      message_author
+      message_id
+      price
+      rooms
+      text
+      user_id
+    }
+  }
+`;
+
+type FetchPropertyResponse = {
+  tg_announcement: Property[]
+}
+
+export async function fetchProperty(id: string): Promise<Property | null> {
+  const result = await apolloClient.query<FetchPropertyResponse>({
+    query: FETCH_PROPERTY_QUERY,
+    variables: {
+      where: {
+        id: { _eq: id },
+      },
+    },
+  });
+
+  const property = result.data.tg_announcement?.[0];
+
+  if (!property) {
+    return null;
+  }
+
+  return mapProperty(property);
 }

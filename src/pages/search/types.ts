@@ -4,4 +4,5 @@ export type FilterValues = {
   priceTo?: string | null;
   roomsFrom?: string | null;
   roomsTo?: string | null;
+  isLookForNeighboor?: boolean;
 }

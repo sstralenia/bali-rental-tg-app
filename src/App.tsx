@@ -27,7 +27,7 @@ const router = createBrowserRouter([
     element: <Layout><ShortlistPage/></Layout>
   },
   {
-    path: '/property-detail',
+    path: '/property/:propertyId',
     element: <Layout><PropertyPage/></Layout>
   },
 
