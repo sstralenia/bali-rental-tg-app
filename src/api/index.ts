@@ -31,7 +31,7 @@ type FetchPropertiesResult = {
 
 const FETCH_PROPERTIES_QUERY = gql`
   query Q ($limit: Int, $offset: Int, $where: tg_announcement_bool_exp) {
-    tg_announcement(limit: $limit, offset: $offset, where: $where) {
+    tg_announcement(limit: $limit, offset: $offset, where: $where, order_by: {created_at: desc}) {
       location
       created_at
       house_type

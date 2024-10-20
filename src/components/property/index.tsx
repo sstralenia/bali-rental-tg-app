@@ -44,9 +44,21 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist }) => {
       <Box style={{ marginBottom: '6px', borderRadius: '20px', overflow: 'hidden' }}>
         <Carousel withIndicators={true} dragFree slideGap={0} align="start" withControls={false}>
           {
-            property.media.map((media) => (
+            property.media.map((media, index) => (
               <Carousel.Slide key={media.url}>
-                <img src={media.url} alt={media.alt} style={{ width: '100%', aspectRatio: 1, borderRadius: '20px' }} />
+                <img
+                  src={media.url}
+                  alt={media.alt}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    aspectRatio: 1,
+                    borderTopLeftRadius: index === 0 ? '20px' : 0,
+                    borderBottomLeftRadius: index === 0 ? '20px' : 0,
+                    borderTopRightRadius: index === property.media.length - 1 ? '20px' : 0,
+                    borderBottomRightRadius: index === property.media.length - 1 ? '20px' : 0,
+                  }}
+                />
               </Carousel.Slide>
             ))
           }

@@ -41,7 +41,7 @@ ${formatMoney(property.price, 'IDR')}
   }, [propertyId, query]);
 
   if (isLoading || !property) {
-    return <LoadingOverlay visible />
+    return <LoadingOverlay visible loaderProps={{ color: '#FF5A5F' }}/>
   }
 
   return (

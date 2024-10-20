@@ -92,7 +92,7 @@ function SearchPage() {
       />
     );
   }, [isFiltersModalsOpened, closeFiltersModal, handleFiltersApply]);
-  const loader = useMemo(() => <Center><Loader size="sm"/></Center>, []);
+  const loader = useMemo(() => <Center><Loader size="sm" color='#FF5A5F'/></Center>, []);
   const endMessage = useMemo(() => {
     if (properties.length === 0) {
       return;
@@ -109,7 +109,7 @@ function SearchPage() {
     <Container>
       <FiltersButton onClick={openFiltersModal}/>
       {
-        isLoading && properties.length === 0 && <LoadingOverlay visible />
+        isLoading && properties.length === 0 && <LoadingOverlay visible loaderProps={{ color: '#FF5A5F' }}/>
       }
       {
         properties.length > 0 && (
