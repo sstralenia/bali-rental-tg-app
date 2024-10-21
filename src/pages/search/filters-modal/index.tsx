@@ -8,13 +8,16 @@ import {
   Box,
   Container,
   Group,
-  Checkbox
+  Checkbox,
+  Radio,
+  Text
 } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
 import useLocations from '../../../hooks/locations';
-import { FilterValues } from '../types';
+import { FilterValues, Room } from '../types';
 import { capitalize } from "../../../utils/string";
 import './styles.css';
-import { IconX } from '@tabler/icons-react';
+import radioClassess from './radio-card.module.css';
 
 const rooms = [
   { value: '1', label: '1' },
@@ -27,6 +30,12 @@ const rooms = [
   { value: '8', label: '8' },
   { value: '9', label: '9' },
 ];
+const roomOptions = ['', '1', '2', '3', '4+'].map(i => ({
+  label: i || 'Не важно',
+  value: i
+}));
+
+console.log('radioClassess', radioClassess)
 
 type Props = {
   opened: boolean;
@@ -66,9 +75,9 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
       roomsTo: null,
       priceFrom: null,
       priceTo: null,
+      isLookForNeighboor: false,
     });
-    onApply({});
-  }, [onApply]);
+  }, [setFilters]);
 
 
   useEffect(() => {
@@ -78,6 +87,8 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
       delete document.body.dataset['scrollLocked'];
     }
   }, [opened])
+
+  console.log('filters', filters)
 
   return (
     <Container className={`filters-modal ${opened && 'opened'}`}>
@@ -95,28 +106,34 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
           value={filters.location}
           onChange={(location) => setFilters((current) => ({ ...current, location }))}
         />
-        <Select
+        <Radio.Group
           label="Кол-во комнат"
-          placeholder="От"
-          data={roomsFromOptions}
-          value={filters.roomsFrom}
-          disabled={filters.isLookForNeighboor}
-          onChange={(roomsFrom) => setFilters((current) => ({ ...current, roomsFrom }))}
-          mt="xs"
-        />
-        <Select
-          placeholder="До"
-          data={roomsToOptions}
-          value={filters.roomsTo}
-          disabled={filters.isLookForNeighboor}
-          onChange={(roomsTo) => setFilters((current) => ({ ...current, roomsTo }))}
-        />
+          value={filters.room}
+          className={radioClassess['radio-group']}
+          onChange={v => setFilters((current) => ({ ...current, room: (v as Room) }))}
+        >
+          <Group>
+            {
+              roomOptions.map(o => (
+                <Radio.Card
+                  className={radioClassess['radio-item']}
+                  radius="md"
+                  value={o.value}
+                  key={o.value}
+                  style={{width: 'auto'}}
+                >
+                  <Text>{o.label}</Text>
+                </Radio.Card>
+              ))
+            }
+          </Group>
+        </Radio.Group>
         <Checkbox
           checked={filters.isLookForNeighboor}
           onChange={e => setFilters((current) => ({ ...current, isLookForNeighboor: e.currentTarget.checked }))}
-          label="Ищу соседа"
+          label="Ищут соседа"
         />
-        <Input.Wrapper label="Цена (в IDR)" mt="xs">
+        <Input.Wrapper label="Цена (в млн IDR)" mt="xs">
           <Input
             type="number"
             placeholder="От"

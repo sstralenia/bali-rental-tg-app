@@ -56,7 +56,9 @@ const FETCH_PROPERTIES_QUERY = gql`
 const MEDIA_URL = 'https://balibucket.sgp1.cdn.digitaloceanspaces.com/Bali';
 
 function buildWhereClause(query: Query): Record<string, unknown> {
-  const whereClause: Record<string, { _gte?: unknown, _lte?: unknown, _eq?: unknown }> = {};
+  const whereClause: Record<string, { _gte?: unknown, _lte?: unknown, _eq?: unknown }> = {
+    media_amount: { _gte: 1 },
+  };
 
   if (query.location) {
     whereClause.location = { _eq: query.location };

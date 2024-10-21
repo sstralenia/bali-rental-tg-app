@@ -1,3 +1,4 @@
+export type Room = '1' | '2' | '3' | '4+';
 export type FilterValues = {
   location?: string | null;
   priceFrom?: string | null;
@@ -5,4 +6,5 @@ export type FilterValues = {
   roomsFrom?: string | null;
   roomsTo?: string | null;
   isLookForNeighboor?: boolean;
+  room?: Room | null;
 }

@@ -1,0 +1,19 @@
+.radio-group {
+  & >>> .mantine-Group-root {
+    gap: 0
+  }
+}
+
+.radio-item {
+  padding: 5px 10px;
+  transition: border-color 150ms ease;
+  border-color: #767676;
+
+  &[data-checked] {
+    border-color: #FF5A5F;
+  }
+
+  & >>> button:focus {
+    outline: none;
+  }
+}

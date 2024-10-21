@@ -5,7 +5,7 @@ export function formatRooms(rooms: number): string {
     case rooms > 1 && rooms < 5:
       return `${rooms} комнаты`;
     case rooms === 69:
-      return 'Ищу соседа'
+      return 'Ищут соседа'
     default:
       return `${rooms} комнат`;
   }

@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 6;
 const LOOK_FOR_NEIGHBOR_ROOMS_NUMBER = 69;
+const ONE_MILLION = 1_000_000;
 
 function SearchPage() {
   const navigate = useNavigate();
@@ -62,8 +63,8 @@ function SearchPage() {
   useEffect(() => {
     const query = {
       location: filters.location ?? undefined,
-      priceFrom: filters.priceFrom ? parseInt(filters.priceFrom) : undefined,
-      priceTo: filters.priceTo ? parseInt(filters.priceTo) : undefined,
+      priceFrom: filters.priceFrom ? parseFloat(filters.priceFrom) * ONE_MILLION : undefined,
+      priceTo: filters.priceTo ? parseInt(filters.priceTo) * ONE_MILLION : undefined,
       roomsFrom: filters.isLookForNeighboor
         ? LOOK_FOR_NEIGHBOR_ROOMS_NUMBER
         : filters.roomsFrom

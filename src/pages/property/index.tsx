@@ -17,10 +17,20 @@ function PropertyPage() {
   const { propertyId } = useParams();
   const { isLoading, property, query } = useProperty();
   const [opened, { open, close }] = useDisclosure(false);
-  const canGoBack = window.history.length > 2;
+  
+  const handleBack = () => {
+    const canGoBack = window.history.length > 2;
+
+    if (canGoBack) {
+      navigate(-1);
+      return;
+    }
+
+    navigate('/');
+  };
 
   const handleContact = () => {
-    window.location.href = 'tg://resolve?domain=chill_lime';
+    window.location.href = 'https://t.me/chill_lime';
   };
 
   const handleShare = () => {
@@ -31,13 +41,20 @@ function PropertyPage() {
     const url = `${APP_URL}?startapp=propertyId_${propertyId}`;
     const text = `${capitalize(property?.location)}, ${getHouseType(property.house_type)}
 ${formatRooms(property.rooms)}
-${formatMoney(property.price, 'IDR')}
+${formatMoney(property.price, 'Rp')}
 `;
     window.location.href = `https://t.me/share/url?url=${url}&text=${text}`;
   };
 
   useEffect(() => {
     query(propertyId ?? '');
+
+    /**
+     * Scroll to top cause sometime
+     * when page is open it's not on top
+     * 
+     */
+    document.body.scrollBy(0, 0);
   }, [propertyId, query]);
 
   if (isLoading || !property) {
@@ -46,14 +63,10 @@ ${formatMoney(property.price, 'IDR')}
 
   return (
     <Container size='lg' style={{ paddingBottom: '100px', overflow: 'hidden' }}>
-      {
-        canGoBack && (
-          <Group onClick={() => navigate(-1)} style={{ padding: '10px 0px', gap: 2, marginBottom: 10, position: 'relative', left: -10 }}>
-            <IconChevronLeft size={30} />
-            <Text>Back</Text>
-          </Group>
-        )
-      }
+      <Group onClick={handleBack} style={{ padding: '10px 0px', gap: 2, marginBottom: 10, position: 'relative', left: -10 }}>
+        <IconChevronLeft size={30} />
+        <Text>Back</Text>
+      </Group>
       <Carousel
         withIndicators
         withControls={false}
@@ -81,8 +94,8 @@ ${formatMoney(property.price, 'IDR')}
         </Title>
       </Box>
       <Box mb="xs">
-        <Title order={2}>
-          { formatMoney(property.price, 'IDR') }
+        <Title order={3}>
+          { formatMoney(property.price, 'Rp') }
         </Title>
       </Box>
       <Box mb="lg" dangerouslySetInnerHTML={{ __html: property.text.replace(/\n/g, '<br/>') }} />

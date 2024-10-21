@@ -65,7 +65,7 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist }) => {
         </Carousel>
       </Box>
       <Text style={{ color: '#222222', fontWeight: 'bold', fontSize: '17px' }}>
-        {formatMoney(property.price, 'IDR')}
+        {formatMoney(property.price, 'Rp')}
       </Text>
       <Text style={{ color: '#6A6A6A', fontSize: '14px' }}>
         <Text component='span' style={{ textTransform: 'capitalize' }}>{property.location}</Text>
