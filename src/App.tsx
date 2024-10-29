@@ -12,6 +12,7 @@ import SearchPage from './pages/search';
 import ShortlistPage from './pages/shortlist';
 import PropertyPage from './pages/property';
 import './App.css';
+import { useEffect } from 'react';
 
 const theme = createTheme({
   fontFamily: 'Inter, sans-serif',
@@ -35,6 +36,11 @@ const router = createBrowserRouter([
 
 
 function App() {
+  useEffect(() => {
+    // @ts-expect-error Telegram is not a key of window
+    window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+  }, []);
+
   return (
     <MantineProvider theme={theme}>
       <RouterProvider router={router} />
