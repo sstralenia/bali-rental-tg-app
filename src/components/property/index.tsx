@@ -8,8 +8,8 @@ import {
 import { Carousel } from '@mantine/carousel';
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Property } from '../../types';
-import { formatMoney } from '../../utils/money';
-import { formatRooms } from '../../utils/rooms';
+import { formatMoney } from '../../formatters/money';
+import { formatRooms } from '../../formatters/rooms';
 
 type Props = {
   property: Property;

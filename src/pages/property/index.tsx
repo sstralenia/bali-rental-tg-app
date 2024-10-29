@@ -5,10 +5,10 @@ import { useDisclosure } from '@mantine/hooks';
 import { Carousel } from '@mantine/carousel';
 import { IconChevronLeft } from '@tabler/icons-react';
 import useProperty from '../../hooks/property';
-import { formatRooms } from '../../utils/rooms';
-import { getHouseType } from '../../utils/house-type';
+import { formatRooms } from '../../formatters/rooms';
+import { formatHouseType } from '../../formatters/house-type';
 import { capitalize } from '../../utils/string';
-import { formatMoney } from '../../utils/money';
+import { formatMoney } from '../../formatters/money';
 
 const APP_URL = 'https://t.me/carpe_on_diet_bot/carpe_on_diet';
 
@@ -39,7 +39,7 @@ function PropertyPage() {
     }
 
     const url = `${APP_URL}?startapp=propertyId_${propertyId}`;
-    const text = `📍 ${capitalize(property?.location)}, ${getHouseType(property.house_type)}%0A🏠 ${formatRooms(property.rooms)}%0A💵 ${formatMoney(property.price, 'Rp')}`;
+    const text = `📍 ${capitalize(property?.location)}, ${formatHouseType(property.house_type)}%0A🏠 ${formatRooms(property.rooms)}%0A💵 ${formatMoney(property.price, 'Rp')}`;
     window.location.href = `https://t.me/share/url?url=${url}&text=${text}`;
   };
 
@@ -84,7 +84,7 @@ function PropertyPage() {
       </Carousel>
       <Box mb="3">
         <Title order={2}>
-          {capitalize(property.location)}, {getHouseType(property.house_type)}
+          {capitalize(property.location)}, {formatHouseType(property.house_type)}
         </Title>
         <Title order={4}>
           {formatRooms(property.rooms)}

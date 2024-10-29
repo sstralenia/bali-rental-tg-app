@@ -9,7 +9,6 @@ export default function usePropertiesSearch() {
   const [error, setError] = useState<Error | null>(null);
 
   const query = useCallback(async ({ query, pagination }: { query: Query, pagination: Pagination }) => {
-    console.log('query', query, pagination);
     try {
       setIsLoading(true);
       const { properties, total } = await fetchProperties({ query, pagination });
@@ -24,7 +23,6 @@ export default function usePropertiesSearch() {
   }, [setIsLoading, setProperties, setError]);
 
   const queryNext = useCallback(async ({ query, pagination }: { query: Query, pagination: Pagination }) => {
-    console.log('Next', query, pagination);
     try {
       setIsLoading(true);
       const { properties: nextProperties, total: nextTotal } = await fetchProperties({ query, pagination });
