@@ -8,12 +8,13 @@
   padding: 5px 10px;
   transition: border-color 150ms ease;
   border-color: #767676;
+  outline: none;
 
   &[data-checked] {
     border-color: #FF5A5F;
   }
 
-  & >>> button:focus {
+  &:focus {
     outline: none;
   }
 }

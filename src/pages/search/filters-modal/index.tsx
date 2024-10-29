@@ -19,23 +19,22 @@ import { capitalize } from "../../../utils/string";
 import './styles.css';
 import radioClassess from './radio-card.module.css';
 
-const rooms = [
-  { value: '1', label: '1' },
-  { value: '2', label: '2' },
-  { value: '3', label: '3' },
-  { value: '4', label: '4' },
-  { value: '5', label: '5' },
-  { value: '6', label: '6' },
-  { value: '7', label: '7' },
-  { value: '8', label: '8' },
-  { value: '9', label: '9' },
-];
-const roomOptions = ['', '1', '2', '3', '4+'].map(i => ({
-  label: i || 'Не важно',
-  value: i
-}));
-
-console.log('radioClassess', radioClassess)
+const roomOptions = [{
+  label: 'Не важно',
+  value: 'none',
+}, {
+  label: '1',
+  value: '1',
+}, {
+  label: '2',
+  value: '2',
+}, {
+  label: '3',
+  value: '3',
+}, {
+  label: '4+',
+  value: '4+',
+}]
 
 type Props = {
   opened: boolean;
@@ -44,38 +43,34 @@ type Props = {
 }
 
 const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
-  const [filters, setFilters] = useState<FilterValues>({});
+  const [filters, setFilters] = useState<FilterValues>({
+    location: null,
+    room: 'none',
+    isLookForNeighboor: false,
+    priceFrom: null,
+    priceTo: null,
+  });
   const { locations } = useLocations();
-  console.log('filters', filters)
-
-  const roomsFromOptions = useMemo(() => {
-    return rooms.filter(room => !filters.roomsTo || parseInt(room.value) <= parseInt(filters.roomsTo));
-  }, [filters.roomsTo]);
-  const roomsToOptions = useMemo(() => {
-    return rooms.filter(room => !filters.roomsFrom || parseInt(room.value) >= parseInt(filters.roomsFrom));
-  }, [filters.roomsFrom]);
   const locationOptions = useMemo(() => {
     return locations.map(location => ({ value: location, label: capitalize(location) }));
   }, [locations]);
 
   const handleApply = useCallback(() => {
     onApply({
-      location: filters.location || undefined,
-      roomsFrom: filters.roomsFrom || undefined,
-      roomsTo: filters.roomsTo || undefined,
-      priceFrom: filters.isLookForNeighboor ? undefined : filters.priceFrom?.toString() || undefined,
-      priceTo: filters.isLookForNeighboor ? undefined : filters.priceTo?.toString() || undefined,
+      location: filters.location || null,
+      priceFrom: filters.priceFrom?.toString() || null,
+      priceTo: filters.priceTo?.toString() || null,
       isLookForNeighboor: filters.isLookForNeighboor || false,
+      room: filters.isLookForNeighboor ? null : filters.room,
     });
-  }, [filters.location, filters.roomsFrom, filters.roomsTo, filters.priceFrom, filters.priceTo, onApply]);
+  }, [filters.location, filters.priceFrom, filters.priceTo, filters.room, onApply]);
   const handleReset = useCallback(() => {
     setFilters({
       location: null,
-      roomsFrom: null,
-      roomsTo: null,
       priceFrom: null,
       priceTo: null,
       isLookForNeighboor: false,
+      room: null,
     });
   }, [setFilters]);
 
@@ -87,6 +82,13 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
       delete document.body.dataset['scrollLocked'];
     }
   }, [opened])
+
+  useEffect(() => {
+    setFilters(filters => ({
+      ...filters,
+      room: filters.isLookForNeighboor ? null : 'none',
+    }));
+  }, [filters.isLookForNeighboor]);
 
   console.log('filters', filters)
 
@@ -118,6 +120,7 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
                 <Radio.Card
                   className={radioClassess['radio-item']}
                   radius="md"
+                  disabled={filters.isLookForNeighboor}
                   value={o.value}
                   key={o.value}
                   style={{width: 'auto'}}
@@ -136,6 +139,7 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
         <Input.Wrapper label="Цена (в млн IDR)" mt="xs">
           <Input
             type="number"
+            min={0}
             placeholder="От"
             value={filters.priceFrom ?? ''}
             onChange={(e) => setFilters((current) => ({ ...current, priceFrom: e.target.value }))}
@@ -144,6 +148,7 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
         </Input.Wrapper>
         <Input
           placeholder="До"
+          max={100}
           type="number"
           value={filters.priceTo ?? ''}
           onChange={e => setFilters((current) => ({ ...current, priceTo: e.target.value }))}

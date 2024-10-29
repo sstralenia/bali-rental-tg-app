@@ -15,16 +15,50 @@ import { FilterValues } from './types';
 import FiltersButton from './filters-button';
 import FiltersModal from './filters-modal';
 import { useNavigate } from 'react-router-dom';
+import { Query } from '../../api';
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
 const LOOK_FOR_NEIGHBOR_ROOMS_NUMBER = 69;
 const ONE_MILLION = 1_000_000;
+
+function buildQueryFromFilters(filters: FilterValues): Query {
+  const query: Partial<Query> = {};
+
+  query.location = filters.location ?? undefined;
+  query.priceFrom = filters.priceFrom ? parseFloat(filters.priceFrom) * ONE_MILLION : undefined;
+  query.priceTo = filters.priceTo ? parseFloat(filters.priceTo) * ONE_MILLION : undefined;
+
+  if (filters.isLookForNeighboor) {
+    query.roomsFrom = LOOK_FOR_NEIGHBOR_ROOMS_NUMBER;
+    query.roomsTo = LOOK_FOR_NEIGHBOR_ROOMS_NUMBER;
+  } else {
+    switch(filters.room) {
+      case '1':
+      case '2':
+      case '3':
+        query.roomsFrom = parseInt(filters.room);
+        query.roomsTo = parseInt(filters.room);
+        break;
+      case '4+':
+        query.roomsFrom = 4;
+        break;
+    }
+  }
+
+  return query;
+}
 
 function SearchPage() {
   const navigate = useNavigate();
   const [activePage, setPage] = useState(1);
   const { query: queryProperties, queryNext: queryNextProperties, totalItems, properties, isLoading } = usePropertiesSearch();
-  const [filters, setFilters] = useState<FilterValues>({});
+  const [filters, setFilters] = useState<FilterValues>({
+    location: null,
+    priceFrom: null,
+    priceTo: null,
+    isLookForNeighboor: false,
+    room: null,
+  });
   const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
 
   const handleFiltersApply = useCallback((filters: FilterValues) => {
@@ -61,21 +95,7 @@ function SearchPage() {
   }, [navigate]);
 
   useEffect(() => {
-    const query = {
-      location: filters.location ?? undefined,
-      priceFrom: filters.priceFrom ? parseFloat(filters.priceFrom) * ONE_MILLION : undefined,
-      priceTo: filters.priceTo ? parseInt(filters.priceTo) * ONE_MILLION : undefined,
-      roomsFrom: filters.isLookForNeighboor
-        ? LOOK_FOR_NEIGHBOR_ROOMS_NUMBER
-        : filters.roomsFrom
-          ? parseInt(filters.roomsFrom)
-          : undefined,
-      roomsTo: filters.isLookForNeighboor 
-        ? LOOK_FOR_NEIGHBOR_ROOMS_NUMBER 
-        : filters.roomsTo
-          ? parseInt(filters.roomsTo)
-          : undefined,
-    };
+    const query = buildQueryFromFilters(filters);
 
     if (activePage === 1) {
       queryProperties({ query, pagination: { page: activePage, perPage: ITEMS_PER_PAGE } });
@@ -110,7 +130,14 @@ function SearchPage() {
     <Container>
       <FiltersButton onClick={openFiltersModal}/>
       {
-        isLoading && properties.length === 0 && <LoadingOverlay visible loaderProps={{ color: '#FF5A5F' }}/>
+        isLoading && properties.length === 0 && (
+          <LoadingOverlay visible loaderProps={{ color: '#FF5A5F' }}/>
+        )
+      }
+      {
+        !isLoading && properties.length === 0 && (
+          <Center h="100vh"><Text>Объявлений не найдено</Text></Center>
+        )
       }
       {
         properties.length > 0 && (

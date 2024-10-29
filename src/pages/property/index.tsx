@@ -39,10 +39,7 @@ function PropertyPage() {
     }
 
     const url = `${APP_URL}?startapp=propertyId_${propertyId}`;
-    const text = `${capitalize(property?.location)}, ${getHouseType(property.house_type)}
-${formatRooms(property.rooms)}
-${formatMoney(property.price, 'Rp')}
-`;
+    const text = `📍 ${capitalize(property?.location)}, ${getHouseType(property.house_type)}%0A🏠 ${formatRooms(property.rooms)}%0A💵 ${formatMoney(property.price, 'Rp')}`;
     window.location.href = `https://t.me/share/url?url=${url}&text=${text}`;
   };
 
