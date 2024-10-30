@@ -38,12 +38,13 @@ const roomOptions = [{
 
 type Props = {
   opened: boolean;
+  filters: FilterValues;
   onClose: () => void;
   onApply: (filters: FilterValues) => void;
 }
 
-const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
-  const [filters, setFilters] = useState<FilterValues>({
+const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onApply }) => {
+  const [filters, setFilters] = useState<FilterValues>(initialFilters || {
     location: null,
     room: 'none',
     isLookForNeighboor: false,
@@ -70,10 +71,9 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
       priceFrom: null,
       priceTo: null,
       isLookForNeighboor: false,
-      room: null,
+      room: 'none',
     });
   }, [setFilters]);
-
 
   useEffect(() => {
     if (opened) {
@@ -89,8 +89,6 @@ const FiltersModal: FC<Props> = ({ opened, onClose, onApply }) => {
       room: filters.isLookForNeighboor ? null : 'none',
     }));
   }, [filters.isLookForNeighboor]);
-
-  console.log('filters', filters)
 
   return (
     <Container className={`filters-modal ${opened && 'opened'}`}>

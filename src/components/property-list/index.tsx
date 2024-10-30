@@ -1,15 +1,16 @@
 import { FC, useMemo } from 'react';
 import { Grid } from '@mantine/core';
-import PropertyItem from '../property';
+import PropertyItem from '../property-item';
 import useShortlistedProperties from '../../hooks/shortlistedProperties';
 import { Property } from '../../types';
 
 type Props = {
   properties: Property[]
   columns?: number
+  onSelect: (property: Property) => void;
 }
 
-const PropertyList: FC<Props> = ({ properties, columns = 1 }) => {
+const PropertyList: FC<Props> = ({ properties, columns = 1, onSelect }) => {
   const { properties: shortlistedProperties, toggle: toggleShortlistProperty } = useShortlistedProperties();
 
   const shortlistedPropertiesMap = useMemo(() => {
@@ -29,6 +30,7 @@ const PropertyList: FC<Props> = ({ properties, columns = 1 }) => {
               key={p.id}
               shortlisted={shortlistedPropertiesMap.has(p.id)}
               onShortlist={toggleShortlistProperty}
+              onClick={onSelect}
             />
           </Grid.Col>
         )

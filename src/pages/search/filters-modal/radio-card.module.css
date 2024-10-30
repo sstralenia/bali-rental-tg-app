@@ -10,6 +10,10 @@
   border-color: #767676;
   outline: none;
 
+  &:hover {
+    border-color: #767676;
+  }
+
   &[data-checked] {
     border-color: #FF5A5F;
   }

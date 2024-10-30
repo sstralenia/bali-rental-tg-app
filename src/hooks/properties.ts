@@ -13,7 +13,13 @@ export default function usePropertiesSearch() {
       setIsLoading(true);
       const { properties, total } = await fetchProperties({ query, pagination });
 
-      setProperties(properties)
+      setProperties(prev => {
+        if (pagination.page === 1) {
+          return properties;
+        }
+
+        return [...prev, ...properties];
+      })
       setTotalItems(total);
     } catch (err) {
       setError(err as Error);
@@ -22,19 +28,19 @@ export default function usePropertiesSearch() {
     }
   }, [setIsLoading, setProperties, setError]);
 
-  const queryNext = useCallback(async ({ query, pagination }: { query: Query, pagination: Pagination }) => {
-    try {
-      setIsLoading(true);
-      const { properties: nextProperties, total: nextTotal } = await fetchProperties({ query, pagination });
+  // const queryNext = useCallback(async ({ query, pagination }: { query: Query, pagination: Pagination }) => {
+  //   try {
+  //     setIsLoading(true);
+  //     const { properties: nextProperties, total: nextTotal } = await fetchProperties({ query, pagination });
 
-      setProperties(properties => [...properties, ...nextProperties]);
-      setTotalItems(nextTotal);
-    } catch (err) {
-      setError(err as Error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [setIsLoading, setProperties, setError]);
+  //     setProperties(properties => [...properties, ...nextProperties]);
+  //     setTotalItems(nextTotal);
+  //   } catch (err) {
+  //     setError(err as Error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [setIsLoading, setProperties, setError]);
 
-  return { isLoading, properties, query, queryNext, error, totalItems };
+  return { isLoading, properties, query, error, totalItems };
 }

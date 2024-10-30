@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 
 import Layout from './layouts/main';
+import PageStateProvider from './context/page';
 import SearchPage from './pages/search';
 import ShortlistPage from './pages/shortlist';
 import PropertyPage from './pages/property';
@@ -21,11 +22,23 @@ const theme = createTheme({
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout><SearchPage/></Layout>
+    element: (
+      <Layout>
+        <PageStateProvider>
+          <SearchPage/>
+        </PageStateProvider>
+      </Layout>
+    )
   },
   {
     path: '/shortlisted',
-    element: <Layout><ShortlistPage/></Layout>
+    element: (
+      <Layout>
+        <PageStateProvider>
+          <ShortlistPage/>
+        </PageStateProvider>
+      </Layout>
+    )
   },
   {
     path: '/property/:propertyId',
@@ -38,7 +51,9 @@ const router = createBrowserRouter([
 function App() {
   useEffect(() => {
     // @ts-expect-error Telegram is not a key of window
-    window.Telegram.WebApp.isVerticalSwipesEnabled = false;
+    window.Telegram.WebApp.disableVerticalSwipes();
+    // @ts-expect-error Telegram is not a key of window
+    window.Telegram.WebApp.expand();
   }, []);
 
   return (

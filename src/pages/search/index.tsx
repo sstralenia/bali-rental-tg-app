@@ -11,11 +11,20 @@ import { useDisclosure } from '@mantine/hooks';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import usePropertiesSearch from '../../hooks/properties';
 import PropertyList from '../../components/property-list';
+import PropertyModal from '../../components/property-modal';
 import { FilterValues } from './types';
 import FiltersButton from './filters-button';
 import FiltersModal from './filters-modal';
 import { useNavigate } from 'react-router-dom';
 import { Query } from '../../api';
+import { Property } from '../../types';
+import usePageState from '../../hooks/pageState';
+
+type PageState = {
+  filters: FilterValues;
+  properties: Property[];
+  totalItems: number;
+}
 
 const ITEMS_PER_PAGE = 10;
 const LOOK_FOR_NEIGHBOR_ROOMS_NUMBER = 69;
@@ -50,9 +59,11 @@ function buildQueryFromFilters(filters: FilterValues): Query {
 
 function SearchPage() {
   const navigate = useNavigate();
+  const { state, setPageState } = usePageState<PageState>('search');
   const [activePage, setPage] = useState(1);
-  const { query: queryProperties, queryNext: queryNextProperties, totalItems, properties, isLoading } = usePropertiesSearch();
-  const [filters, setFilters] = useState<FilterValues>({
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const { query: queryProperties, totalItems, properties, isLoading } = usePropertiesSearch();
+  const [filters, setFilters] = useState<FilterValues>(state.filters || {
     location: null,
     priceFrom: null,
     priceTo: null,
@@ -63,13 +74,16 @@ function SearchPage() {
 
   const handleFiltersApply = useCallback((filters: FilterValues) => {
     setFilters(filters);
+    setPageState({
+      filters,
+    });
     setPage(1);
     closeFiltersModal();
-  }, [setFilters, setPage, closeFiltersModal]);
+  }, [setFilters, setPage, closeFiltersModal, setPageState]);
 
   const fetchData = useCallback(() => setPage((page) => page + 1), [setPage]);
 
-  console.log('Render seach page', properties.length);
+  console.log('Render seach page', properties.length, state);
   
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -96,18 +110,23 @@ function SearchPage() {
 
   useEffect(() => {
     const query = buildQueryFromFilters(filters);
+    queryProperties({
+      query,
+      pagination: { page: activePage, perPage: ITEMS_PER_PAGE }
+    });
+  }, [queryProperties, activePage, filters]);
 
-    if (activePage === 1) {
-      queryProperties({ query, pagination: { page: activePage, perPage: ITEMS_PER_PAGE } });
-    } else {
-      queryNextProperties({ query, pagination: { page: activePage, perPage: ITEMS_PER_PAGE } });
+  useEffect(() => {
+    if (!isLoading && activePage === 1) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [queryProperties, queryNextProperties, activePage, filters]);
+  }, [isLoading, activePage]);
 
   const filtersModal = useMemo(() => {
     return (
       <FiltersModal
         opened={isFiltersModalsOpened}
+        filters={filters}
         onClose={closeFiltersModal}
         onApply={handleFiltersApply}
       />
@@ -125,13 +144,28 @@ function SearchPage() {
       </Text>
    );
   }, [properties.length]);
+  const propertyModal = useMemo(() => {
+    if (!selectedProperty) {
+      return null;
+    }
+
+    return (
+      <PropertyModal property={selectedProperty} onBack={() => setSelectedProperty(null)} />
+    );
+  }, [selectedProperty]);
+
+  console.log('isLoading && activePage === 1', isLoading && activePage === 1)
 
   return (
     <Container>
       <FiltersButton onClick={openFiltersModal}/>
       {
-        isLoading && properties.length === 0 && (
-          <LoadingOverlay visible loaderProps={{ color: '#FF5A5F' }}/>
+        isLoading && activePage === 1 && (
+          <LoadingOverlay
+            visible
+            loaderProps={{ color: '#FF5A5F' }}
+            style={{ zIndex: 100, position: 'fixed', top: 0, bottom: 0 }}
+          />
         )
       }
       {
@@ -152,6 +186,7 @@ function SearchPage() {
             <PropertyList
               properties={properties}
               columns={1}
+              onSelect={setSelectedProperty}
             />
           </InfiniteScroll>
         )
@@ -159,6 +194,10 @@ function SearchPage() {
 
       {
         createPortal(filtersModal, document.body)
+      }
+
+      {
+        propertyModal && createPortal(propertyModal, document.body)
       }
     </Container>
   )
