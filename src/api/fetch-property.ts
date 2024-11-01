@@ -18,6 +18,9 @@ const FETCH_PROPERTY_QUERY = gql`
       rooms
       text
       user_id
+      user {
+        user_name
+      }
     }
   }
 `;

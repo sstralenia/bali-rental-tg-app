@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom';
 
 import Layout from './layouts/main';
-import PageStateProvider from './context/page';
 import SearchPage from './pages/search';
 import ShortlistPage from './pages/shortlist';
 import PropertyPage from './pages/property';
@@ -24,9 +23,7 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <Layout>
-        <PageStateProvider>
-          <SearchPage/>
-        </PageStateProvider>
+        <SearchPage/>
       </Layout>
     )
   },
@@ -34,9 +31,7 @@ const router = createBrowserRouter([
     path: '/shortlisted',
     element: (
       <Layout>
-        <PageStateProvider>
-          <ShortlistPage/>
-        </PageStateProvider>
+        <ShortlistPage/>
       </Layout>
     )
   },

@@ -134,23 +134,33 @@ const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onA
           onChange={e => setFilters((current) => ({ ...current, isLookForNeighboor: e.currentTarget.checked }))}
           label="Ищут соседа"
         />
-        <Input.Wrapper label="Цена (в млн IDR)" mt="xs">
+        
+        <Group
+          style={{ flexWrap: 'nowrap', alignItems: 'flex-end' }}
+        >
+          <Input.Wrapper
+            label="Цена (в млн IDR)"
+            mt="xs"
+          >
+            <Input
+              type="number"
+              min={0}
+              placeholder="Мин"
+              value={filters.priceFrom ?? ''}
+              onChange={(e) => setFilters((current) => ({ ...current, priceFrom: e.target.value }))}
+              mt="2px"
+            />
+          </Input.Wrapper>
+
           <Input
+            placeholder="Макс"
+            max={100}
             type="number"
-            min={0}
-            placeholder="От"
-            value={filters.priceFrom ?? ''}
-            onChange={(e) => setFilters((current) => ({ ...current, priceFrom: e.target.value }))}
-            mt="2px"
+            value={filters.priceTo ?? ''}
+            onChange={e => setFilters((current) => ({ ...current, priceTo: e.target.value }))}
           />
-        </Input.Wrapper>
-        <Input
-          placeholder="До"
-          max={100}
-          type="number"
-          value={filters.priceTo ?? ''}
-          onChange={e => setFilters((current) => ({ ...current, priceTo: e.target.value }))}
-        />
+        </Group>
+        
         <Group mt="sm">
           <Button
             onClick={handleApply}

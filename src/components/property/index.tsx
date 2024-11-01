@@ -9,6 +9,7 @@ import { formatHouseType } from '../../formatters/house-type';
 import { capitalize } from '../../utils/string';
 import { formatMoney } from '../../formatters/money';
 import { Property as PropertyType } from '../../types';
+import { formatDate } from '../../formatters/date';
 
 const APP_URL = 'https://t.me/carpe_on_diet_bot/carpe_on_diet';
 
@@ -24,7 +25,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false }) => {
 
   const handleContact = () => {
     // @ts-expect-error Telegram is not a key of window
-    window.Telegram.WebApp.openLink(`tg://user?id=${property?.user_id}`);
+    window.Telegram.WebApp.openLink(`https://t.me/${property?.user.user_name}`);
   };
 
   const handleShare = () => {
@@ -81,7 +82,17 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false }) => {
           { formatMoney(property.price, 'IDR') }
         </Title>
       </Box>
-      <Box mb="lg" dangerouslySetInnerHTML={{ __html: property.text.replace(/\n/g, '<br/>') }} />
+      <Box mb="sm" dangerouslySetInnerHTML={{ __html: property.text.replace(/\n/g, '<br/>') }} />
+
+      {
+        (property.updated_at || property.created_at) && (
+          <Box mb="lg">
+            <Title order={4}>
+              Обновлено {formatDate(property.updated_at || property.created_at)}
+            </Title>
+          </Box>
+        )
+      }
 
       <Group>
         <Button

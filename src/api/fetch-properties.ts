@@ -45,6 +45,9 @@ const FETCH_PROPERTIES_QUERY = gql`
       rooms
       text
       user_id
+      user {
+        user_name
+      }
     }
     tg_announcement_aggregate(where: $where) {
       aggregate {

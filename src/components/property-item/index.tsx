@@ -4,12 +4,14 @@ import {
   Text,
   Box,
   Flex,
+  Group,
 } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Property } from '../../types';
 import { formatMoney } from '../../formatters/money';
 import { formatRooms } from '../../formatters/rooms';
+import { formatDate } from '../../formatters/date';
 
 type Props = {
   property: Property;
@@ -65,14 +67,28 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }
           }
         </Carousel>
       </Box>
-      <Text style={{ color: '#222222', fontWeight: 'bold', fontSize: '17px' }}>
-        {formatMoney(property.price, 'IDR')}
-      </Text>
+
+      <Group style={{ justifyContent: 'space-between' }}>
+        <Text style={{ color: '#222222', fontWeight: 'bold', fontSize: '17px' }}>
+          {formatMoney(property.price, 'IDR')}
+        </Text>
+
+        {
+          (property.updated_at || property.created_at) && (
+            <Text style={{ color: '#222222', fontSize: '12px' }}>
+              Обновлено {formatDate(property.updated_at || property.created_at)}
+            </Text>
+          )
+        }
+      </Group>
+
       <Text style={{ color: '#6A6A6A', fontSize: '14px' }}>
         <Text component='span' style={{ textTransform: 'capitalize' }}>{property.location}</Text>
         &nbsp;&nbsp;•&nbsp;&nbsp;
         {formatRooms(property.rooms)}
       </Text>
+
+      
     </Flex>
   );
 }

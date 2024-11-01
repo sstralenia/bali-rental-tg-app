@@ -154,8 +154,6 @@ function SearchPage() {
     );
   }, [selectedProperty]);
 
-  console.log('isLoading && activePage === 1', isLoading && activePage === 1)
-
   return (
     <Container>
       <FiltersButton onClick={openFiltersModal}/>
