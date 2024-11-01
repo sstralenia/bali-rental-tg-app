@@ -34,6 +34,7 @@ function ShortlistPage() {
             properties={shortlistedProperties}
             columns={1}
             onSelect={setSelectedProperty}
+            source="shortlist"
           />
         )
       }

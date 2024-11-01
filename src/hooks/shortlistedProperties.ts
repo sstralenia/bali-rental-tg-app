@@ -31,7 +31,6 @@ export default function useShortlistedProperties() {
   }, []);
 
   const toggleProperty = (property:  Property) => {
-    console.log('toggleProperty', property);
     const index = properties.findIndex(p => p.id === property.id);
     const copy = [...properties];
 
@@ -40,8 +39,6 @@ export default function useShortlistedProperties() {
     } else {
       copy.splice(index, 1);
     }
-
-    console.log('copy', copy)
 
     setProperties(copy);
     storeProperties(copy)

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { useParams,  } from 'react-router-dom';
 import { Container, Box, Title, Modal, Text, Group, Button, LoadingOverlay } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -10,6 +10,7 @@ import { capitalize } from '../../utils/string';
 import { formatMoney } from '../../formatters/money';
 import { Property as PropertyType } from '../../types';
 import { formatDate } from '../../formatters/date';
+import useAnalytics from '../../hooks/analytics';
 
 const APP_URL = 'https://t.me/carpe_on_diet_bot/carpe_on_diet';
 
@@ -20,10 +21,16 @@ type Props = {
 }
 
 const Property: FC<Props> = ({ onBack, property, isLoading = false }) => {
+  const { track } = useAnalytics();
   const { propertyId } = useParams();
   const [opened, { open, close }] = useDisclosure(false);
 
+  useEffect(() => {
+    track('property_viewed', { propertyId });
+  }, [propertyId, track]);
+
   const handleContact = () => {
+    track('property_contacted', { propertyId });
     // @ts-expect-error Telegram is not a key of window
     window.Telegram.WebApp.openLink(`https://t.me/${property?.user.user_name}`);
   };
@@ -32,6 +39,8 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false }) => {
     if (!property) {
       return;
     }
+
+    track('property_shared', { propertyId });
 
     const url = `${APP_URL}?startapp=propertyId_${propertyId}`;
     const text = `📍 ${capitalize(property?.location)}, ${formatHouseType(property.house_type)}%0A🏠 ${formatRooms(property.rooms)}%0A💵 ${formatMoney(property.price, 'IDR')}`;

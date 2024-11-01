@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import { Query } from '../../api';
 import { Property } from '../../types';
 import usePageState from '../../hooks/pageState';
+import useAnalytics from '../../hooks/analytics';
 
 type PageState = {
   filters: FilterValues;
@@ -71,6 +72,7 @@ function SearchPage() {
     room: null,
   });
   const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
+  const { track } = useAnalytics();
 
   const handleFiltersApply = useCallback((filters: FilterValues) => {
     setFilters(filters);
@@ -78,6 +80,7 @@ function SearchPage() {
       filters,
     });
     setPage(1);
+    track('filters_applied', { ...filters });
     closeFiltersModal();
   }, [setFilters, setPage, closeFiltersModal, setPageState]);
 
@@ -185,6 +188,7 @@ function SearchPage() {
               properties={properties}
               columns={1}
               onSelect={setSelectedProperty}
+              source="search"
             />
           </InfiniteScroll>
         )
