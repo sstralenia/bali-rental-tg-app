@@ -1,6 +1,6 @@
 import { AppShell, Container, Text } from '@mantine/core';
-import { Link, useLocation } from 'react-router-dom';
 import { IconHeart, IconSearch } from '@tabler/icons-react';
+import { useRouter } from '../../hooks/router';
 
 const tabs = [
   {
@@ -16,23 +16,23 @@ const tabs = [
 ]
 
 const NavigationBar = () => {
-  const location = useLocation();
+  const { location, navigate } = useRouter();
 
   return (
     <AppShell.Footer>
       <Container style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
         {
           tabs.map(tab => (
-            <Link
+            <a
               key={tab.path}
               style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 3, padding: 8 }}
-              to={tab.path}
+              onClick={() => navigate(tab.path)}
             >
-              <tab.icon size={25} color={location.pathname === tab.path ? '#FF5A5F' : '#6A6A6A' }/>
-              <Text style={{ fontSize: 10, color:  location.pathname === tab.path ? '#FF5A5F' : '#6A6A6A' }}>
+              <tab.icon size={25} color={location.path === tab.path ? '#FF5A5F' : '#6A6A6A' }/>
+              <Text style={{ fontSize: 10, color:  location.path === tab.path ? '#FF5A5F' : '#6A6A6A' }}>
                 {tab.name}
               </Text>
-            </Link>
+            </a>
           ))
         }
       </Container>

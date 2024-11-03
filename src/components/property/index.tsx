@@ -1,5 +1,4 @@
 import { FC, useEffect } from 'react';
-import { useParams,  } from 'react-router-dom';
 import { Container, Box, Title, Modal, Text, Group, Button, LoadingOverlay } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Carousel } from '@mantine/carousel';
@@ -22,17 +21,15 @@ type Props = {
 
 const Property: FC<Props> = ({ onBack, property, isLoading = false }) => {
   const { track } = useAnalytics();
-  const { propertyId } = useParams();
   const [opened, { open, close }] = useDisclosure(false);
 
   useEffect(() => {
-    track('property_viewed', { propertyId });
-  }, [propertyId, track]);
+    track('property_viewed', { propertyId: property?.id });
+  }, [property?.id, track]);
 
   const handleContact = () => {
-    track('property_contacted', { propertyId });
-    // @ts-expect-error Telegram is not a key of window
-    window.Telegram.WebApp.openLink(`https://t.me/${property?.user.user_name}`);
+    track('property_contacted', { propertyId: property?.id });
+    window.location.href = `https://t.me/${property?.user.user_name}`;
   };
 
   const handleShare = () => {
@@ -40,14 +37,13 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false }) => {
       return;
     }
 
-    track('property_shared', { propertyId });
+    track('property_shared', { propertyId: property?.id });
 
-    const url = `${APP_URL}?startapp=propertyId_${propertyId}`;
+    const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
     const text = `📍 ${capitalize(property?.location)}, ${formatHouseType(property.house_type)}%0A🏠 ${formatRooms(property.rooms)}%0A💵 ${formatMoney(property.price, 'IDR')}`;
     const fullUrl = `https://t.me/share/url?url=${url}&text=${text}`;
 
-    // @ts-expect-error Telegram is not a key of window
-    window.Telegram.WebApp.openLink(fullUrl);
+    window.location.href = fullUrl;
   };
 
   if (isLoading || !property) {
@@ -66,7 +62,6 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false }) => {
         dragFree
         slideGap={0}
         align="start"
-        loop
         style={{ marginBottom: '20px' }}
         onClick={open}
       >

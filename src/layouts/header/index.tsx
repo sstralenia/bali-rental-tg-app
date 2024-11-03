@@ -1,4 +1,3 @@
-import { NavLink } from "react-router-dom";
 import {
   AppShell,
   List,
@@ -13,14 +12,14 @@ export default function Header() {
       <Container style={{ display: 'flex', alignItems: 'center', height: '100%', justifyContent: 'center' }}>
         <List className='navigation-list'>
           <List.Item>
-            <NavLink to="/" >
+            <a href="/" >
               <Text>Поиск вакансий</Text>
-            </NavLink>
+            </a>
           </List.Item>
           <List.Item>
-            <NavLink to="/shortlisted">
+            <a href="/shortlisted">
               <Text>Избранное</Text>
-            </NavLink>
+            </a>
           </List.Item>
         </List>
       </Container>

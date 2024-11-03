@@ -1,25 +1,13 @@
-import { memo, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { memo } from 'react';
 import { Container, Center, Text } from '@mantine/core';
 
 import useShortlistedProperties from '../../hooks/shortlistedProperties';
-import PropertyModal from '../../components/property-modal';
 import PropertyList from '../../components/property-list';
-import { Property } from '../../types';
+import { useRouter } from '../../hooks/router';
 
 function ShortlistPage() {
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const { navigate } = useRouter();
   const { properties: shortlistedProperties } = useShortlistedProperties();
-
-  const propertyModal = useMemo(() => {
-    if (!selectedProperty) {
-      return null;
-    }
-
-    return (
-      <PropertyModal property={selectedProperty} onBack={() => setSelectedProperty(null)} />
-    );
-  }, [selectedProperty]);
 
   return (
     <Container>
@@ -33,14 +21,10 @@ function ShortlistPage() {
           <PropertyList
             properties={shortlistedProperties}
             columns={1}
-            onSelect={setSelectedProperty}
+            onSelect={p => navigate('/property', { propertyId: p.id })}
             source="shortlist"
           />
         )
-      }
-
-      {
-        propertyModal && createPortal(propertyModal, document.body)
       }
     </Container>
   );

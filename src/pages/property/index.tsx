@@ -1,33 +1,19 @@
 import { useCallback, useEffect } from 'react';
-import { useNavigate, useParams,  } from 'react-router-dom';
-import useProperty from '../../hooks/property';
 import Property from '../../components/property';
+import useProperty from '../../hooks/property';
+import { useRouter } from '../../hooks/router';
 
 function PropertyPage() {
-  const navigate = useNavigate();
-  const { propertyId } = useParams();
+  const { goBack, location } = useRouter();
   const { isLoading, property, query } = useProperty();
+  const { propertyId } = location.params as { propertyId: string };
   
   const handleBack = useCallback(() => {
-    const canGoBack = window.history.length > 2;
-
-    if (canGoBack) {
-      navigate(-1);
-      return;
-    }
-
-    navigate('/');
-  }, [navigate]);
+    goBack()
+  }, [goBack]);
 
   useEffect(() => {
     query(propertyId ?? '');
-
-    /**
-     * Scroll to top cause sometime
-     * when page is open it's not on top
-     * 
-     */
-    document.body.scrollBy(0, 0);
   }, [propertyId, query]);
 
   return (

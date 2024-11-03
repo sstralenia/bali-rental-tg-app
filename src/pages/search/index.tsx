@@ -9,23 +9,14 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import usePropertiesSearch from '../../hooks/properties';
+import { Query } from '../../api';
 import PropertyList from '../../components/property-list';
-import PropertyModal from '../../components/property-modal';
+import usePropertiesSearch from '../../hooks/properties';
+import useAnalytics from '../../hooks/analytics';
+import { useRouter } from '../../hooks/router';
 import { FilterValues } from './types';
 import FiltersButton from './filters-button';
 import FiltersModal from './filters-modal';
-import { useNavigate } from 'react-router-dom';
-import { Query } from '../../api';
-import { Property } from '../../types';
-import usePageState from '../../hooks/pageState';
-import useAnalytics from '../../hooks/analytics';
-
-type PageState = {
-  filters: FilterValues;
-  properties: Property[];
-  totalItems: number;
-}
 
 const ITEMS_PER_PAGE = 10;
 const LOOK_FOR_NEIGHBOR_ROOMS_NUMBER = 69;
@@ -59,12 +50,9 @@ function buildQueryFromFilters(filters: FilterValues): Query {
 }
 
 function SearchPage() {
-  const navigate = useNavigate();
-  const { state, setPageState } = usePageState<PageState>('search');
   const [activePage, setPage] = useState(1);
-  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const { query: queryProperties, totalItems, properties, isLoading } = usePropertiesSearch();
-  const [filters, setFilters] = useState<FilterValues>(state.filters || {
+  const [filters, setFilters] = useState<FilterValues>({
     location: null,
     priceFrom: null,
     priceTo: null,
@@ -73,43 +61,18 @@ function SearchPage() {
   });
   const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
   const { track } = useAnalytics();
+  const { navigate } = useRouter();
 
   const handleFiltersApply = useCallback((filters: FilterValues) => {
     setFilters(filters);
-    setPageState({
-      filters,
-    });
     setPage(1);
     track('filters_applied', { ...filters });
     closeFiltersModal();
-  }, [setFilters, setPage, closeFiltersModal, setPageState]);
+  }, [setFilters, setPage, closeFiltersModal, track]);
 
   const fetchData = useCallback(() => setPage((page) => page + 1), [setPage]);
 
-  console.log('Render seach page', properties.length, state);
-  
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    /**
-     * tgWebAppStartParam is passed in query if bot is run
-     * as https://t.me/carpe_on_diet_bot/carpe_on_diet?startapp=propertyId_664
-     */
-    const tgWebAppStartParam = urlParams.get('tgWebAppStartParam');
-
-    if (!tgWebAppStartParam) {
-      return;
-    }
-
-    /**
-     * Values are passed as key_value.
-     * E.g. propertyId_664
-     */
-    const [key, value] = tgWebAppStartParam.split('_');
-
-    if (key === 'propertyId') {
-      navigate(`/property/${value}`);
-    }
-  }, [navigate]);
+  console.log('Render seach page', properties.length);
 
   useEffect(() => {
     const query = buildQueryFromFilters(filters);
@@ -119,11 +82,11 @@ function SearchPage() {
     });
   }, [queryProperties, activePage, filters]);
 
-  useEffect(() => {
-    if (!isLoading && activePage === 1) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [isLoading, activePage]);
+  // useEffect(() => {
+  //   if (!isLoading && activePage === 1) {
+  //     window.scrollTo({ top: 0, behavior: 'smooth' });
+  //   }
+  // }, [isLoading, activePage]);
 
   const filtersModal = useMemo(() => {
     return (
@@ -147,18 +110,9 @@ function SearchPage() {
       </Text>
    );
   }, [properties.length]);
-  const propertyModal = useMemo(() => {
-    if (!selectedProperty) {
-      return null;
-    }
-
-    return (
-      <PropertyModal property={selectedProperty} onBack={() => setSelectedProperty(null)} />
-    );
-  }, [selectedProperty]);
 
   return (
-    <Container>
+    <Container id="search-page">
       <FiltersButton onClick={openFiltersModal}/>
       {
         isLoading && activePage === 1 && (
@@ -183,11 +137,12 @@ function SearchPage() {
             loader={loader}
             endMessage={endMessage}
             style={{ overflow: 'hidden' }}
+            scrollableTarget="search-page"
           >
             <PropertyList
               properties={properties}
               columns={1}
-              onSelect={setSelectedProperty}
+              onSelect={p => navigate('/property', { propertyId: p.id })}
               source="search"
             />
           </InfiniteScroll>
@@ -196,10 +151,6 @@ function SearchPage() {
 
       {
         createPortal(filtersModal, document.body)
-      }
-
-      {
-        propertyModal && createPortal(propertyModal, document.body)
       }
     </Container>
   )

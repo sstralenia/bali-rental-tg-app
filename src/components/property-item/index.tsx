@@ -1,5 +1,4 @@
 import { FC, SyntheticEvent, useCallback } from 'react';
-// import { useNavigate } from 'react-router-dom';
 import {
   Text,
   Box,
@@ -21,14 +20,10 @@ type Props = {
 }
 
 const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }) => {
-  // const navigate = useNavigate();
   const handleShortlist = useCallback((e: SyntheticEvent) => {
     e.stopPropagation();
     onShortlist(property)
   }, [property, onShortlist]);
-  // const handleClick = useCallback(() => {
-  //   navigate(`/property/${property.id}`);
-  // },[property, navigate]);
 
   return (
     <Flex

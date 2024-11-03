@@ -1,11 +1,7 @@
 import { MantineProvider, createTheme } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
-
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from 'react-router-dom';
+import { RouterProvider } from './router';
 
 import Layout from './layouts/main';
 import SearchPage from './pages/search';
@@ -19,7 +15,7 @@ const theme = createTheme({
   fontFamily: 'Inter, sans-serif',
 });
 
-const router = createBrowserRouter([
+const routes = [
   {
     path: '/',
     element: (
@@ -37,12 +33,14 @@ const router = createBrowserRouter([
     )
   },
   {
-    path: '/property/:propertyId',
-    element: <Layout><PropertyPage/></Layout>
+    path: '/property',
+    element: (
+      <Layout>
+        <PropertyPage/>
+      </Layout>
+    )
   },
-
-]);
-
+];
 
 function App() {
   const { identify, track } = useAnalytics();
@@ -61,9 +59,42 @@ function App() {
     track('app_opened');
   }, [identify, track]);
 
+  const location = (() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    /**
+     * tgWebAppStartParam is passed in query if bot is run
+      * as https://t.me/carpe_on_diet_bot/carpe_on_diet?startapp=propertyId_664
+      */
+    const tgWebAppStartParam = urlParams.get('tgWebAppStartParam');
+
+    if (!tgWebAppStartParam) {
+      return null;
+    }
+
+    /**
+     * Values are passed as key_value.
+     * E.g. propertyId_664
+     */
+    const [key, value] = tgWebAppStartParam.split('_');
+
+    if (key === 'propertyId') {
+      return {
+        path: '/property',
+        params: {
+          propertyId: value,
+        }
+      }
+    }
+
+    return null;
+  })();
+
   return (
     <MantineProvider theme={theme}>
-      <RouterProvider router={router} />
+      <RouterProvider
+        routes={routes}
+        defaultLocation={location}
+      />
     </MantineProvider>
   )
 }
