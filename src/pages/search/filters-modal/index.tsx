@@ -14,10 +14,10 @@ import {
 } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 import useLocations from '../../../hooks/locations';
+import { formatLocation } from "../../../formatters/location";
 import { FilterValues, Room } from '../types';
 import './styles.css';
 import radioClassess from './radio-card.module.css';
-import { formatLocation } from "../../../formatters/location";
 
 const roomOptions = [{
   label: 'Не важно',
