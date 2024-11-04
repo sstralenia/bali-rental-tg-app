@@ -15,7 +15,6 @@ import {
 import { IconX } from '@tabler/icons-react';
 import useLocations from '../../../hooks/locations';
 import { FilterValues, Room } from '../types';
-import { capitalize } from "../../../utils/string";
 import './styles.css';
 import radioClassess from './radio-card.module.css';
 import { formatLocation } from "../../../formatters/location";
