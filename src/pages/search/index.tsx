@@ -112,7 +112,10 @@ function SearchPage() {
   }, [properties.length]);
 
   return (
-    <Container id="search-page">
+    <Container
+      id="search-page"
+      style={{ padding: '20px 20px 0px 20px' }}
+    >
       <FiltersButton onClick={openFiltersModal}/>
       {
         isLoading && activePage === 1 && (

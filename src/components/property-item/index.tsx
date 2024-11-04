@@ -11,6 +11,7 @@ import { Property } from '../../types';
 import { formatMoney } from '../../formatters/money';
 import { formatRooms } from '../../formatters/rooms';
 import { formatDate } from '../../formatters/date';
+import { formatLocation } from '../../formatters/location';
 
 type Props = {
   property: Property;
@@ -39,8 +40,13 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }
          { !shortlisted && <IconHeartFilled color='black' opacity={0.4} size={33} onClick={handleShortlist}/> }
       </Box>
 
-      <Box style={{ marginBottom: '6px', borderRadius: '20px', overflow: 'hidden' }}>
-        <Carousel withIndicators={true} dragFree slideGap={0} align="start" withControls={false}>
+      <Box style={{ marginBottom: '10px', borderRadius: '20px', overflow: 'hidden' }}>
+        <Carousel
+          withIndicators={true}
+          slideGap={0}
+          align="start"
+          withControls={false}
+        >
           {
             property.media.map((media, index) => (
               <Carousel.Slide key={media.url}>
@@ -63,7 +69,7 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }
         </Carousel>
       </Box>
 
-      <Group style={{ justifyContent: 'space-between' }}>
+      <Group style={{ justifyContent: 'space-between', paddingBottom: '0px' }}>
         <Text style={{ color: '#222222', fontWeight: 'bold', fontSize: '17px' }}>
           {formatMoney(property.price, 'IDR')}
         </Text>
@@ -78,7 +84,7 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }
       </Group>
 
       <Text style={{ color: '#6A6A6A', fontSize: '14px' }}>
-        <Text component='span' style={{ textTransform: 'capitalize' }}>{property.location}</Text>
+        <Text component='span'>{formatLocation(property.location)}</Text>
         &nbsp;&nbsp;•&nbsp;&nbsp;
         {formatRooms(property.rooms)}
       </Text>

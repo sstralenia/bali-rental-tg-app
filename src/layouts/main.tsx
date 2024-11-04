@@ -15,7 +15,6 @@ const Main: FC<{ children: ReactNode }> = ({ children }) => {
           background: theme.colors.gray[0],
           width: '100vw',
           backgroundColor: '#F2F3F5',
-          paddingTop: 20,
           paddingBottom: 80,
         },
       }}

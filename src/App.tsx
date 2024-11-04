@@ -10,6 +10,7 @@ import PropertyPage from './pages/property';
 import './App.css';
 import { useEffect } from 'react';
 import useAnalytics from './hooks/analytics';
+import { StoreProvider } from './store';
 
 const theme = createTheme({
   fontFamily: 'Inter, sans-serif',
@@ -91,10 +92,12 @@ function App() {
 
   return (
     <MantineProvider theme={theme}>
-      <RouterProvider
-        routes={routes}
-        defaultLocation={location}
-      />
+      <StoreProvider>
+        <RouterProvider
+          routes={routes}
+          defaultLocation={location}
+        />
+      </StoreProvider>
     </MantineProvider>
   )
 }

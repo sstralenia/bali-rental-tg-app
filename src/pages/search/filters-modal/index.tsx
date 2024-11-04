@@ -18,6 +18,7 @@ import { FilterValues, Room } from '../types';
 import { capitalize } from "../../../utils/string";
 import './styles.css';
 import radioClassess from './radio-card.module.css';
+import { formatLocation } from "../../../formatters/location";
 
 const roomOptions = [{
   label: 'Не важно',
@@ -53,7 +54,10 @@ const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onA
   });
   const { locations } = useLocations();
   const locationOptions = useMemo(() => {
-    return locations.map(location => ({ value: location, label: capitalize(location) }));
+    return locations.map(location => ({
+      value: location,
+      label: formatLocation(location)
+    }));
   }, [locations]);
 
   const handleApply = useCallback(() => {

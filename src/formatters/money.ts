@@ -16,5 +16,5 @@ export function formatMoney(value: number, currency: string): string {
     minimumFractionDigits: 0,
   }).format(valueInMillions);
 
-  return `${formattedNumber} млн ${currency}`
+  return `${formattedNumber} МЛН ${currency}`
 }

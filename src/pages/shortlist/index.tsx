@@ -9,8 +9,10 @@ function ShortlistPage() {
   const { navigate } = useRouter();
   const { properties: shortlistedProperties } = useShortlistedProperties();
 
+  console.log('shortlistedProperties', shortlistedProperties)
+
   return (
-    <Container>
+    <Container style={{ padding: '20px 20px 0px 20px' }}>
       {
         shortlistedProperties.length === 0 && (
           <Center h="calc(100vh - 80px)"><Text>Нет избранных объявлений</Text></Center>
