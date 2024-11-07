@@ -2,9 +2,9 @@ import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: 'https://busy-lamprey-45.hasura.app/v1/graphql',
+    uri: 'https://bali-bot-production.hasura.app/v1/graphql',
     headers: {
-      'x-hasura-admin-secret': 'tdxH1uy14R0AV7NdU1KxPtjJjVutU7F9q3b4OFLaT3wJYRnsMw2iVKxgup8fZTzY',
+      'x-hasura-admin-secret': 'fOcUwlZIH9FwpwyBKQyKyhYL3W4cCkjoU1MJMiTqI9OCSgXZlr6Hs6zJglSy5OCb',
     },
   }),
   cache: new InMemoryCache(),

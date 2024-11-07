@@ -75,16 +75,16 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }
         </Text>
 
         {
-          (property.updated_at || property.created_at) && (
+          (property.posted_at) && (
             <Text style={{ color: '#222222', fontSize: '12px' }}>
-              Обновлено {formatDate(property.updated_at || property.created_at)}
+              Обновлено {formatDate(property.posted_at)}
             </Text>
           )
         }
       </Group>
 
       <Text style={{ color: '#6A6A6A', fontSize: '14px' }}>
-        <Text component='span'>{formatLocation(property.location)}</Text>
+        {formatLocation(property.location)}
         &nbsp;&nbsp;•&nbsp;&nbsp;
         {formatRooms(property.rooms)}
       </Text>

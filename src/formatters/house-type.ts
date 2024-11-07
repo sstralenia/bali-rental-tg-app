@@ -1,4 +1,8 @@
-export function formatHouseType(houseType: string): string {
+export function formatHouseType(houseType: string | null): string {
+  if (houseType === null) {
+    return ''
+  }
+
   switch (houseType.toLocaleLowerCase()) {
     case 'Villa':
     case 'villa':

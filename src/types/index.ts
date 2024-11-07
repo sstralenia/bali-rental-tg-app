@@ -1,20 +1,16 @@
 export type Property = {
   id: string;
-  location: string;
-  created_at: string | null;
-  updated_at?: string | null;
-  house_type: string;
+  source: 'telegram' | 'facebook';
+  location: string | null;
+  posted_at: string | null;
+  house_type: string | null;
   link: string;
   media_amount: number;
-  message_author: string | null;
   message_id: number;
   price: number;
   rooms: number;
   text: string;
-  user_id: number;
-  user: {
-    user_name: string;
-  }
+  username: string | null;
   media: {
     url: string;
     alt: string;

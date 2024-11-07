@@ -4,29 +4,26 @@ import apolloClient from './apollo-client';
 import { mapProperty } from './helpers';
 
 const FETCH_PROPERTY_QUERY = gql`
-  query Q ($where: tg_announcement_bool_exp) {
-    tg_announcement(limit: 1, offset: 0, where: $where) {
+  query Q ($where: announcements_bool_exp) {
+    announcements(limit: 1, offset: 0, where: $where) {
       location
-      created_at
+      source
+      posted_at
       house_type
       id
       link
       media_amount
-      message_author
       message_id
       price
       rooms
       text
-      user_id
-      user {
-        user_name
-      }
+      username
     }
   }
 `;
 
 type FetchPropertyResponse = {
-  tg_announcement: Property[]
+  announcements: Property[]
 }
 
 export async function fetchProperty(id: string): Promise<Property | null> {
@@ -39,7 +36,7 @@ export async function fetchProperty(id: string): Promise<Property | null> {
     },
   });
 
-  const property = result.data.tg_announcement?.[0];
+  const property = result.data.announcements?.[0];
 
   if (!property) {
     return null;

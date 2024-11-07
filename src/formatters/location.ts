@@ -8,6 +8,10 @@ const locationMap: Record<string, string> = {
   'uluwatu': 'Улувату',
 };
 
-export function formatLocation(location: string): string {
+export function formatLocation(location: string | null): string {
+  if (!location) {
+    return 'Локация неизвестна';
+  }
+
   return locationMap[location] || location;
 }

@@ -17,8 +17,8 @@ export type Pagination = {
 }
 
 type FetchPropertiesResponse = {
-  tg_announcement: Property[]
-  tg_announcement_aggregate: {
+  announcements: Property[]
+  announcements_aggregate: {
     aggregate: {
       count: number
     }
@@ -31,25 +31,22 @@ type FetchPropertiesResult = {
 }
 
 const FETCH_PROPERTIES_QUERY = gql`
-  query Q ($limit: Int, $offset: Int, $where: tg_announcement_bool_exp) {
-    tg_announcement(limit: $limit, offset: $offset, where: $where, order_by: {created_at: desc}) {
+  query Q ($limit: Int, $offset: Int, $where: announcements_bool_exp) {
+    announcements(limit: $limit, offset: $offset, where: $where, order_by: {posted_at: desc}) {
       location
-      created_at
+      source
+      posted_at
       house_type
       id
       link
       media_amount
-      message_author
       message_id
       price
       rooms
       text
-      user_id
-      user {
-        user_name
-      }
+      username
     }
-    tg_announcement_aggregate(where: $where) {
+    announcements_aggregate(where: $where) {
       aggregate {
         count
       }
@@ -58,8 +55,9 @@ const FETCH_PROPERTIES_QUERY = gql`
 `;
 
 function buildWhereClause(query: Query): Record<string, unknown> {
-  const whereClause: Record<string, { _gte?: unknown, _lte?: unknown, _eq?: unknown }> = {
+  const whereClause: Record<string, { _gte?: unknown, _lte?: unknown, _eq?: unknown, _neq?: unknown }> = {
     media_amount: { _gte: 1 },
+    source: { _eq: 'telegram' },
   };
 
   if (query.location) {
@@ -103,11 +101,11 @@ export async function fetchProperties({ query, pagination }: { query: Query, pag
     }
   });
 
-  const properties = result.data.tg_announcement;
+  const properties = result.data.announcements;
   const mappedProperties = properties.map(mapProperty);
 
   return {
     properties: mappedProperties,
-    total: result.data.tg_announcement_aggregate?.aggregate?.count ?? mappedProperties.length,
+    total: result.data.announcements_aggregate?.aggregate?.count ?? mappedProperties.length,
   };
 }

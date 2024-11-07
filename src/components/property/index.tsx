@@ -4,7 +4,6 @@ import { useDisclosure } from '@mantine/hooks';
 import { Carousel } from '@mantine/carousel';
 import { IconChevronLeft, IconUpload, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Property as PropertyType } from '../../types';
-import { capitalize } from '../../utils/string';
 import useAnalytics from '../../hooks/analytics';
 import { formatRooms } from '../../formatters/rooms';
 import { formatHouseType } from '../../formatters/house-type';
@@ -12,7 +11,7 @@ import { formatMoney } from '../../formatters/money';
 import { formatDate } from '../../formatters/date';
 import { formatLocation } from '../../formatters/location';
 
-const APP_URL = 'https://t.me/carpe_on_diet_bot/carpe_on_diet';
+const APP_URL = 'https://t.me/BaliRentalHouseBot/BaliRentalHouseApp';
 
 type Props = {
   onBack: () => void;
@@ -25,6 +24,7 @@ type Props = {
 const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist }) => {
   const { track } = useAnalytics();
   const [opened, { open, close }] = useDisclosure(false);
+  const houseType = formatHouseType(property?.house_type ?? '');
 
   useEffect(() => {
     track('property_viewed', { propertyId: property?.id });
@@ -32,7 +32,15 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
 
   const handleContact = () => {
     track('property_contacted', { propertyId: property?.id });
-    window.location.href = `https://t.me/${property?.user.user_name}`;
+    let url;
+
+    if (property?.source === 'telegram') {
+      url = `https://t.me/${property?.user.user_name}`;
+    } else {
+      url = property?.link ?? '';
+    }
+
+    window.location.href = url;
   };
 
   const handleShare = useCallback(() => {
@@ -43,7 +51,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     track('property_shared', { propertyId: property?.id });
 
     const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
-    const text = `📍 ${capitalize(property?.location)}, ${formatHouseType(property.house_type)}%0A🏠 ${formatRooms(property.rooms)}%0A💵 ${formatMoney(property.price, 'IDR')}`;
+    const text = `📍 ${formatLocation(property?.location)}, ${formatHouseType(property.house_type)}%0A🏠 ${formatRooms(property.rooms)}%0A💵 ${formatMoney(property.price, 'IDR')}`;
     const fullUrl = `https://t.me/share/url?url=${url}&text=${text}`;
 
     window.location.href = fullUrl;
@@ -118,7 +126,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
       <Box style={{ padding: '0px 20px' }}>
         <Box mb="3">
           <Title order={3}>
-            {formatLocation(property.location)}, {formatHouseType(property.house_type)}
+            {formatLocation(property.location)}{ houseType && `, ${houseType}` }
           </Title>
           <Title order={4} style={{ marginTop: '4px', marginBottom: '9px' }}>
             <Text style={{ fontWeight: 'bold' }}>
@@ -131,10 +139,10 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
         <Box mb="sm" dangerouslySetInnerHTML={{ __html: property.text.replace(/\n/g, '<br/>') }} />
 
         {
-          (property.updated_at || property.created_at) && (
+          (property.posted_at) && (
             <Box mb="xs">
               <Title order={5}>
-                Обновлено {formatDate(property.updated_at || property.created_at)}
+                Обновлено {formatDate(property.posted_at)}
               </Title>
             </Box>
           )
