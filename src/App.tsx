@@ -3,7 +3,6 @@ import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 import { RouterProvider } from './router';
 
-import Layout from './layouts/main';
 import SearchPage from './pages/search';
 import ShortlistPage from './pages/shortlist';
 import PropertyPage from './pages/property';
@@ -18,27 +17,24 @@ const theme = createTheme({
 
 const routes = [
   {
+    name: 'search',
     path: '/',
     element: (
-      <Layout>
-        <SearchPage/>
-      </Layout>
+      <SearchPage/>
     )
   },
   {
+    name: 'shortlisted',
     path: '/shortlisted',
     element: (
-      <Layout>
-        <ShortlistPage/>
-      </Layout>
+      <ShortlistPage/>
     )
   },
   {
+    name: 'property',
     path: '/property',
     element: (
-      <Layout>
-        <PropertyPage/>
-      </Layout>
+      <PropertyPage/>
     )
   },
 ];
@@ -69,7 +65,7 @@ function App() {
     const tgWebAppStartParam = urlParams.get('tgWebAppStartParam');
 
     if (!tgWebAppStartParam) {
-      return null;
+      return;
     }
 
     /**
@@ -86,8 +82,6 @@ function App() {
         }
       }
     }
-
-    return null;
   })();
 
   return (

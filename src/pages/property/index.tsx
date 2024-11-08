@@ -3,28 +3,33 @@ import Property from '../../components/property';
 import useProperty from '../../hooks/property';
 import { useRouter } from '../../hooks/router';
 import useShortlistedProperties from '../../hooks/shortlistedProperties';
+import { Property as TProperty } from '../../types';
 
 function PropertyPage() {
   const { goBack, location } = useRouter();
   const { isLoading, property, query } = useProperty();
-  const { propertyId } = location.params as { propertyId: string };
+  const { propertyId, property: predefinedProperty } = location.params as { propertyId: string, property?: TProperty };
   const { properties: shortlistedProperties, toggle: toggleShortlist } = useShortlistedProperties();
   const isShortlisted = shortlistedProperties.some(p => p.id === propertyId);
 
-  console.log('isShortlisted', isShortlisted)
-  
   const handleBack = useCallback(() => {
     goBack()
   }, [goBack]);
 
   useEffect(() => {
-    query(propertyId ?? '');
-  }, [propertyId, query]);
+    if (!predefinedProperty) {
+      query(propertyId ?? '');
+    }
+  }, [propertyId, predefinedProperty, query]);
+
+  useEffect(() => {
+    document.getElementById('property-root-component')?.scrollTo(0, 0);
+  }, [propertyId])
 
   return (
     <Property
       onBack={handleBack}
-      property={property}
+      property={predefinedProperty || property}
       isLoading={isLoading}
       shortlisted={isShortlisted}
       onShortlist={toggleShortlist}

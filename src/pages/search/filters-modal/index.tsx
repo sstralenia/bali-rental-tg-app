@@ -78,13 +78,13 @@ const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onA
     });
   }, [setFilters]);
 
-  useEffect(() => {
-    if (opened) {
-      document.body.dataset['scrollLocked'] = '1';
-    } else {
-      delete document.body.dataset['scrollLocked'];
-    }
-  }, [opened])
+  // useEffect(() => {
+  //   if (opened) {
+  //     document.body.dataset['scrollLocked'] = '1';
+  //   } else {
+  //     delete document.body.dataset['scrollLocked'];
+  //   }
+  // }, [opened])
 
   useEffect(() => {
     setFilters(filters => ({

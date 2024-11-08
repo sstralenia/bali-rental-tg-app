@@ -23,7 +23,7 @@ type Props = {
 
 const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist }) => {
   const { track } = useAnalytics();
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, { close }] = useDisclosure(false);
   const houseType = formatHouseType(property?.house_type ?? '');
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     let url;
 
     if (property?.source === 'telegram') {
-      url = `https://t.me/${property?.user.user_name}`;
+      url = `https://t.me/${property?.username}`;
     } else {
       url = property?.link ?? '';
     }
@@ -113,7 +113,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
         slideGap={0}
         align="start"
         style={{ marginBottom: '7px' }}
-        onClick={open}
+        // onClick={open}
       >
         {
           property.media.map((media, index) => (

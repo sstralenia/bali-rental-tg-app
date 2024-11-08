@@ -1,4 +1,4 @@
-import { useEffect, useState, memo, useMemo, useCallback } from 'react';
+import { useEffect, useState, memo, useMemo, useCallback, useRef, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Container,
@@ -62,6 +62,7 @@ function SearchPage() {
   const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
   const { track } = useAnalytics();
   const { navigate } = useRouter();
+  const containerRef = useRef<HTMLElement | null>(null);
 
   const handleFiltersApply = useCallback((filters: FilterValues) => {
     setFilters(filters);
@@ -72,7 +73,7 @@ function SearchPage() {
 
   const fetchData = useCallback(() => setPage((page) => page + 1), [setPage]);
 
-  console.log('Render seach page', properties.length);
+  console.log('Render seach page', properties.length, activePage);
 
   useEffect(() => {
     const query = buildQueryFromFilters(filters);
@@ -81,12 +82,6 @@ function SearchPage() {
       pagination: { page: activePage, perPage: ITEMS_PER_PAGE }
     });
   }, [queryProperties, activePage, filters]);
-
-  // useEffect(() => {
-  //   if (!isLoading && activePage === 1) {
-  //     window.scrollTo({ top: 0, behavior: 'smooth' });
-  //   }
-  // }, [isLoading, activePage]);
 
   const filtersModal = useMemo(() => {
     return (
@@ -113,8 +108,8 @@ function SearchPage() {
 
   return (
     <Container
-      id="search-page"
-      style={{ padding: '20px 20px 0px 20px' }}
+      ref={containerRef}
+      style={{ padding: '20px' }}
     >
       <FiltersButton onClick={openFiltersModal}/>
       {
@@ -140,12 +135,12 @@ function SearchPage() {
             loader={loader}
             endMessage={endMessage}
             style={{ overflow: 'hidden' }}
-            scrollableTarget="search-page"
+            scrollableTarget="search-root-component"
           >
             <PropertyList
               properties={properties}
               columns={1}
-              onSelect={p => navigate('/property', { propertyId: p.id })}
+              onSelect={p => navigate('/property', { propertyId: p.id, property: p })}
               source="search"
             />
           </InfiniteScroll>

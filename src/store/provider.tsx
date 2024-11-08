@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { StoreContext } from './context';
 import { Property } from '../types';
 
-const SHORTLISTED_PROPERTIES_KEY = 'shortlisted-properties';
+const SHORTLISTED_PROPERTIES_KEY = 'shortlisted-properties-v2';
 
 function getProperties(): Property[] {
   try {
@@ -48,8 +48,6 @@ export const StoreProvider: FC<StoreProviderProps> = ({ children }) => {
     setProperties(copy);
     storeProperties(copy)
   };
-
-  console.log('properties', properties)
 
   return (
     <StoreContext.Provider
