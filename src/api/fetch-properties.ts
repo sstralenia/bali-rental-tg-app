@@ -57,7 +57,7 @@ const FETCH_PROPERTIES_QUERY = gql`
 function buildWhereClause(query: Query): Record<string, unknown> {
   const whereClause: Record<string, { _gte?: unknown, _lte?: unknown, _eq?: unknown, _neq?: unknown }> = {
     media_amount: { _gte: 1 },
-    source: { _eq: 'telegram' },
+    source: { _eq: 'facebook' },
   };
 
   if (query.location) {
