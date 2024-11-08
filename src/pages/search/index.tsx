@@ -1,4 +1,4 @@
-import { useEffect, useState, memo, useMemo, useCallback, useRef, ReactNode } from 'react';
+import { useEffect, useState, memo, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Container,
@@ -62,7 +62,6 @@ function SearchPage() {
   const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
   const { track } = useAnalytics();
   const { navigate } = useRouter();
-  const containerRef = useRef<HTMLElement | null>(null);
 
   const handleFiltersApply = useCallback((filters: FilterValues) => {
     setFilters(filters);
@@ -108,7 +107,6 @@ function SearchPage() {
 
   return (
     <Container
-      ref={containerRef}
       style={{ padding: '20px' }}
     >
       <FiltersButton onClick={openFiltersModal}/>
