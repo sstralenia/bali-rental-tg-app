@@ -73,7 +73,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
       }}
     >
       <Group
-        style={{ position: 'absolute', top: 20, left: 20, right: 20, zIndex: 5, justifyContent: 'space-between' }}
+        style={{ position: 'absolute', top: 20, left: 20, right: 20, zIndex: 100, justifyContent: 'space-between' }}
       >
         <ActionIcon 
           variant="default"
