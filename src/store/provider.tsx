@@ -40,7 +40,7 @@ export const StoreProvider: FC<StoreProviderProps> = ({ children }) => {
     const copy = [...properties];
 
     if (index === -1) {
-      copy.push(property)
+      copy.unshift(property)
     } else {
       copy.splice(index, 1);
     }
