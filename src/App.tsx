@@ -48,9 +48,11 @@ function App() {
     window.Telegram.WebApp.expand();
 
     // @ts-expect-error Telegram is not a key of window
-    if (window.Telegram.WebApp.initDataUnsafe.user?.id) {
+    if (window.Telegram.WebApp.initDataUnsafe.user) {
       // @ts-expect-error Telegram is not a key of window
-      identify(window.Telegram.WebApp.initDataUnsafe.user?.id);
+      identify(window.Telegram.WebApp.initDataUnsafe.user.id);
+      // @ts-expect-error Telegram is not a key of window
+      setProfileInfo({ ...window.Telegram.WebApp.initDataUnsafe.user });
     }
 
     track('app_opened');

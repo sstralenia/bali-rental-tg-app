@@ -11,7 +11,7 @@ import { formatMoney } from '../../formatters/money';
 import { formatDate } from '../../formatters/date';
 import { formatLocation } from '../../formatters/location';
 
-const APP_URL = 'https://t.me/BaliRentalHouseBot/BaliRentalHouseApp';
+const APP_URL = 'https://t.me/HomesFinderBot/HomesApp';
 
 type Props = {
   onBack: () => void;
