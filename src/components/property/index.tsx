@@ -27,7 +27,9 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
   const houseType = formatHouseType(property?.house_type ?? '');
 
   useEffect(() => {
-    track('property_viewed', { propertyId: property?.id });
+    if (property?.id) {
+      track('property_viewed', { propertyId: property?.id });
+    }
   }, [property?.id, track]);
 
   const handleContact = () => {
