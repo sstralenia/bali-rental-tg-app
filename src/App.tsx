@@ -40,7 +40,7 @@ const routes = [
 ];
 
 function App() {
-  const { identify, track } = useAnalytics();
+  const { identify, track, setProfileInfo } = useAnalytics();
   useEffect(() => {
     // @ts-expect-error Telegram is not a key of window
     window.Telegram.WebApp.disableVerticalSwipes();
@@ -56,7 +56,7 @@ function App() {
     }
 
     track('app_opened');
-  }, [identify, track]);
+  }, [identify, track, setProfileInfo]);
 
   const location = (() => {
     const urlParams = new URLSearchParams(window.location.search);
