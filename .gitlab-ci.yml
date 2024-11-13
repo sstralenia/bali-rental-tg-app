@@ -9,7 +9,7 @@ pages:
     paths:
       # The folder that contains the files to be exposed at the Page URL
       - public
-    path_prefix: $CI_COMMIT_REF_NAME
+  path_prefix: $CI_COMMIT_REF_NAME
   # rules:
   #   # This ensures that only pushes to the default branch will trigger
   #   # a pages deploy
