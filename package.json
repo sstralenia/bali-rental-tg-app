@@ -4,14 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --force",
+    "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:staging": "tsc -b && vite build --mode staging",
     "lint": "eslint .",
     "preview": "vite preview",
     "tunnel": "lt --port 5173",
-    "serve": "serve ./dist",
-    "predeploy": "yarn run build",
-    "deploy": "gh-pages -d public -o github"
+    "serve": "serve ./public",
+    "predeploy:staging": "yarn run build:staging",
+    "deploy:staging": "gh-pages -d public -o github"
   },
   "dependencies": {
     "@apollo/client": "^3.11.8",
