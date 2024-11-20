@@ -34,15 +34,13 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
 
   const handleContact = () => {
     track('property_contacted', { propertyId: property?.id });
-    let url;
 
     if (property?.source === 'telegram') {
-      url = `https://t.me/${property?.username}`;
+      window.location.href = `https://t.me/${property?.username}`;
     } else {
-      url = property?.link ?? '';
+      // @ts-expect-error Telegram is not a key of window
+      window.Telegram.WebApp.openLink(property?.link ?? '');
     }
-
-    window.location.href = url;
   };
 
   const handleShare = useCallback(() => {
@@ -160,14 +158,6 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
           >
             Написать
           </Button>
-          {/* <Button
-            onClick={handleShare}
-            variant="outline"
-            color="#767676"
-            flex="1"
-          >
-            Поделиться
-          </Button> */}
         </Group>
       </Box>
 
