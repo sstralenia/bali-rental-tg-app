@@ -1,6 +1,6 @@
 body[data-scroll-locked] {
   /* overflow: hidden !important; */
-  overscroll-behavior: contain;
+  overscroll-behavior: none;
   position: relative !important;
   padding-left: 0px;
   padding-top: 0px;
