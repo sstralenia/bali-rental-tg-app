@@ -1,6 +1,5 @@
 import { FC, useCallback, useEffect } from 'react';
-import { Container, Box, Title, Modal, Text, Group, Button, LoadingOverlay, ActionIcon } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Container, Box, Title, Text, Group, Button, LoadingOverlay, ActionIcon } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import { IconChevronLeft, IconUpload, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Property as PropertyType } from '../../types';
@@ -11,7 +10,7 @@ import { formatMoney } from '../../formatters/money';
 import { formatDate } from '../../formatters/date';
 import { formatLocation } from '../../formatters/location';
 
-const APP_URL = 'https://t.me/HomesFinderBot/HomesApp';
+const APP_URL = import.meta.env.VITE_APP_URL;
 
 type Props = {
   onBack: () => void;
@@ -23,8 +22,8 @@ type Props = {
 
 const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist }) => {
   const { track } = useAnalytics();
-  const [opened, { close }] = useDisclosure(false);
   const houseType = formatHouseType(property?.house_type ?? '');
+  const canContact = (property?.source === 'telegram' && property?.username) || (property?.source === 'facebook' && property?.link);
 
   useEffect(() => {
     if (property?.id) {
@@ -36,10 +35,9 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     track('property_contacted', { propertyId: property?.id });
 
     if (property?.source === 'telegram') {
-      window.location.href = `https://t.me/${property?.username}`;
+      Telegram.WebApp.openTelegramLink(`https://t.me/${property?.username}`);
     } else {
-      // @ts-expect-error Telegram is not a key of window
-      window.Telegram.WebApp.openLink(property?.link ?? '');
+      Telegram.WebApp.openLink(property?.link ?? '', { try_instant_view: true });
     }
   };
 
@@ -148,41 +146,22 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
           )
         }
 
-        <Group>
-          <Button
-            onClick={handleContact}
-            mt="sm"
-            mb="xs"
-            color="#FF5A5F"
-            flex="1"
-          >
-            Написать
-          </Button>
-        </Group>
+        {
+          canContact && (
+            <Group>
+              <Button
+                onClick={handleContact}
+                mt="sm"
+                mb="xs"
+                color="#FF5A5F"
+                flex="1"
+              >
+                Написать
+              </Button>
+            </Group>
+          )
+        }
       </Box>
-
-      <Modal.Root opened={opened} onClose={close} centered>
-        <Modal.Overlay style={{ background: 'var(--overlay-bg, rgba(0, 0, 0, 0.8))' }}/>
-        <Modal.Content>
-          <Modal.Body p="0">
-            <Carousel
-            withControls={true}
-            dragFree
-            slideGap={0}
-            align="start"
-            loop
-          >
-            {
-              property.media.map((media, index) => (
-                <Carousel.Slide key={index}>
-                  <img src={media.url} alt={media.alt} style={{ width: '100%', objectFit: 'cover' }} />
-                </Carousel.Slide>
-              ))
-            }
-          </Carousel>
-          </Modal.Body>
-        </Modal.Content>
-      </Modal.Root>
     </Container>
   );
 }
