@@ -148,11 +148,9 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
 
         {
           canContact && (
-            <Group>
+            <Group mt="sm" mb="xs">
               <Button
                 onClick={handleContact}
-                mt="sm"
-                mb="xs"
                 color="#FF5A5F"
                 flex="1"
               >

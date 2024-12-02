@@ -1,7 +1,11 @@
 import { MantineProvider, createTheme } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
-import { RouterProvider } from './router';
+
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from 'react-router-dom';
 
 import SearchPage from './pages/search';
 import ShortlistPage from './pages/shortlist';
@@ -15,32 +19,27 @@ const theme = createTheme({
   fontFamily: 'Inter, sans-serif',
 });
 
-const routes = [
+const router = createBrowserRouter([
   {
-    name: 'search',
+    id: 'search',
     path: '/',
-    element: (
-      <SearchPage/>
-    )
+    element: <SearchPage/>
   },
   {
-    name: 'shortlisted',
+    id: 'shortlisted',
     path: '/shortlisted',
-    element: (
-      <ShortlistPage/>
-    )
+    element: <ShortlistPage/>
   },
   {
-    name: 'property',
-    path: '/property',
-    element: (
-      <PropertyPage/>
-    )
+    
+    path: '/property/:propertyId',
+    element: <PropertyPage/>
   },
-];
+]);
 
 function App() {
   const { identify, track, setProfileInfo } = useAnalytics();
+
   useEffect(() => {
     Telegram.WebApp.disableVerticalSwipes();
     Telegram.WebApp.expand();
@@ -53,41 +52,10 @@ function App() {
     track('app_opened');
   }, [identify, track, setProfileInfo]);
 
-  const location = (() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    /**
-     * tgWebAppStartParam is passed in query if bot is run
-      * as https://t.me/carpe_on_diet_bot/carpe_on_diet?startapp=propertyId_664
-      */
-    const tgWebAppStartParam = urlParams.get('tgWebAppStartParam');
-
-    if (!tgWebAppStartParam) {
-      return;
-    }
-
-    /**
-     * Values are passed as key_value.
-     * E.g. propertyId_664
-     */
-    const [key, value] = tgWebAppStartParam.split('_');
-
-    if (key === 'propertyId') {
-      return {
-        path: '/property',
-        params: {
-          propertyId: value,
-        }
-      }
-    }
-  })();
-
   return (
     <MantineProvider theme={theme}>
       <StoreProvider>
-        <RouterProvider
-          routes={routes}
-          defaultLocation={location}
-        />
+        <RouterProvider router={router} />
       </StoreProvider>
     </MantineProvider>
   )
