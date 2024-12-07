@@ -6,6 +6,10 @@ const locationMap: Record<string, string> = {
   'seminyak': 'Семиньяк',
   'ubud': 'Убуд',
   'uluwatu': 'Улувату',
+  'nusa dua': 'Нуса Дуа',
+  'sanur': 'Санур',
+  'ungasan': 'Унгасан',
+  'unagasan': 'Унагасан',
 };
 
 export function formatLocation(location: string | null): string {
