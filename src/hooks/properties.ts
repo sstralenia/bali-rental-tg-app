@@ -1,46 +1,106 @@
-import { useState, useCallback } from 'react';
-import { Property } from '../types';
+import { useState, useCallback, useContext, useEffect } from 'react';
+import { Properties, StoreContext } from '../store';
 import { fetchProperties, Query, Pagination } from '../api';
+import { FilterValues } from '../pages/search/types';
+
+const ITEMS_PER_PAGE = 10;
+const LOOK_FOR_NEIGHBOR_ROOMS_NUMBER = 69;
+const ONE_MILLION = 1_000_000;
+
+function buildQueryFromFilters(filters: FilterValues): Query {
+  const query: Partial<Query> = {};
+
+  query.location = filters.location ?? undefined;
+  query.priceFrom = filters.priceFrom ? parseFloat(filters.priceFrom) * ONE_MILLION : undefined;
+  query.priceTo = filters.priceTo ? parseFloat(filters.priceTo) * ONE_MILLION : undefined;
+
+  if (filters.isLookForNeighboor) {
+    query.roomsFrom = LOOK_FOR_NEIGHBOR_ROOMS_NUMBER;
+    query.roomsTo = LOOK_FOR_NEIGHBOR_ROOMS_NUMBER;
+  } else {
+    switch(filters.room) {
+      case '1':
+      case '2':
+      case '3':
+        query.roomsFrom = parseInt(filters.room);
+        query.roomsTo = parseInt(filters.room);
+        break;
+      case '4+':
+        query.roomsFrom = 4;
+        break;
+    }
+  }
+
+  return query;
+}
 
 export default function usePropertiesSearch() {
   const [isLoading, setIsLoading] = useState(false);
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [totalItems, setTotalItems] = useState<number>(0);
+  const {
+    filters,
+    properties: storedProperties,
+    setProperties: setStoredProperties
+  } = useContext(StoreContext);
   const [error, setError] = useState<Error | null>(null);
 
-  const query = useCallback(async ({ query, pagination }: { query: Query, pagination: Pagination }) => {
+  const query = useCallback(async ({ query, page }: { query: Query, page: number }) => {
     try {
       setIsLoading(true);
+
+      const pagination: Pagination = {
+        page,
+        perPage: ITEMS_PER_PAGE,
+      };
       const { properties, total } = await fetchProperties({ query, pagination });
 
-      setProperties(prev => {
-        if (pagination.page === 1) {
-          return properties;
-        }
+      if (pagination.page === 1) {
+        setStoredProperties(prev => ({
+          ...prev,
+          items: properties,
+          totalItems: total,
+          page: pagination.page,
+        }));
+      } else {
+        setStoredProperties(prev => {
+          const existedItems = new Set(prev.items.map(item => item.id));
+          const newItems = properties.filter(item => !existedItems.has(item.id));
 
-        return [...prev, ...properties];
-      })
-      setTotalItems(total);
+          return {
+            ...prev,
+            items: [...prev.items, ...newItems],
+            totalItems: total,
+            page: pagination.page,
+          };
+        });
+      }
     } catch (err) {
       setError(err as Error);
     } finally {
       setIsLoading(false)
     }
-  }, [setIsLoading, setProperties, setError]);
+  }, [storedProperties]);
 
-  // const queryNext = useCallback(async ({ query, pagination }: { query: Query, pagination: Pagination }) => {
-  //   try {
-  //     setIsLoading(true);
-  //     const { properties: nextProperties, total: nextTotal } = await fetchProperties({ query, pagination });
+  useEffect(() => {
+    query({ query: buildQueryFromFilters(filters), page: storedProperties.page });
+  }, [storedProperties.page]);
 
-  //     setProperties(properties => [...properties, ...nextProperties]);
-  //     setTotalItems(nextTotal);
-  //   } catch (err) {
-  //     setError(err as Error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }, [setIsLoading, setProperties, setError]);
+  useEffect(() => {
+    query({ query: buildQueryFromFilters(filters), page: 1 });
+  }, [filters]);
 
-  return { isLoading, properties, query, error, totalItems };
+  const nextPage = useCallback(() => {
+    setStoredProperties((prev: Properties) => ({
+      ...prev,
+      page: prev.page + 1,
+    }));
+  }, [setStoredProperties]);
+
+  return {
+    isLoading,
+    properties: storedProperties.items,
+    nextPage,
+    error,
+    activePage: storedProperties.page,
+    totalItems: storedProperties.totalItems,
+  };
 }

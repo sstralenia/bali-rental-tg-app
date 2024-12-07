@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { MantineProvider, createTheme } from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
@@ -11,7 +12,6 @@ import SearchPage from './pages/search';
 import ShortlistPage from './pages/shortlist';
 import PropertyPage from './pages/property';
 import './App.css';
-import { useEffect } from 'react';
 import useAnalytics from './hooks/analytics';
 import { StoreProvider } from './store';
 

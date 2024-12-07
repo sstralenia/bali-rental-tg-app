@@ -1,6 +1,7 @@
 import { FC, useState, useEffect } from 'react';
-import { StoreContext } from './context';
+import { Properties, StoreContext } from './context';
 import { Property } from '../types';
+import { FilterValues } from '../pages/search/types';
 
 const SHORTLISTED_PROPERTIES_KEY = 'shortlisted-properties-v2';
 
@@ -29,15 +30,27 @@ type StoreProviderProps = {
 };
 
 export const StoreProvider: FC<StoreProviderProps> = ({ children }) => {
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [shortlistedProperties, setShortlistedProperties] = useState<Property[]>([]);
+  const [filters, setFilters] = useState<FilterValues>({
+    location: null,
+    priceFrom: null,
+    priceTo: null,
+    isLookForNeighboor: false,
+    room: 'none',
+  });
+  const [properties, setProperties] = useState<Properties>({
+    items: [],
+    totalItems: 0,
+    page: 1,
+  });
 
   useEffect(() => {
-    setProperties(getProperties());
+    setShortlistedProperties(getProperties());
   }, []);
 
   const toggleProperty = (property:  Property) => {
-    const index = properties.findIndex(p => p.id === property.id);
-    const copy = [...properties];
+    const index = shortlistedProperties.findIndex(p => p.id === property.id);
+    const copy = [...shortlistedProperties];
 
     if (index === -1) {
       copy.unshift(property)
@@ -45,15 +58,19 @@ export const StoreProvider: FC<StoreProviderProps> = ({ children }) => {
       copy.splice(index, 1);
     }
 
-    setProperties(copy);
+    setShortlistedProperties(copy);
     storeProperties(copy)
   };
 
   return (
     <StoreContext.Provider
       value={{
-        shortlistedProperties: properties,
-        toggleShortlistedProperty: toggleProperty
+        shortlistedProperties,
+        toggleShortlistedProperty: toggleProperty,
+        filters,
+        setFilters,
+        properties,
+        setProperties: (fn) => setProperties(prev => fn(prev)),
       }}
     >
       {children}

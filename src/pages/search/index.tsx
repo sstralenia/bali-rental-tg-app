@@ -1,4 +1,4 @@
-import { useEffect, useState, memo, useMemo, useCallback } from 'react';
+import { useEffect, memo, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Container,
@@ -10,7 +10,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { Query } from '../../api';
 import PropertyList from '../../components/property-list';
 import usePropertiesSearch from '../../hooks/properties';
 import useAnalytics from '../../hooks/analytics';
@@ -18,63 +17,31 @@ import { FilterValues } from './types';
 import FiltersButton from './filters-button';
 import FiltersModal from './filters-modal';
 import Layout from '../../layouts/main';
-
-const ITEMS_PER_PAGE = 10;
-const LOOK_FOR_NEIGHBOR_ROOMS_NUMBER = 69;
-const ONE_MILLION = 1_000_000;
-
-function buildQueryFromFilters(filters: FilterValues): Query {
-  const query: Partial<Query> = {};
-
-  query.location = filters.location ?? undefined;
-  query.priceFrom = filters.priceFrom ? parseFloat(filters.priceFrom) * ONE_MILLION : undefined;
-  query.priceTo = filters.priceTo ? parseFloat(filters.priceTo) * ONE_MILLION : undefined;
-
-  if (filters.isLookForNeighboor) {
-    query.roomsFrom = LOOK_FOR_NEIGHBOR_ROOMS_NUMBER;
-    query.roomsTo = LOOK_FOR_NEIGHBOR_ROOMS_NUMBER;
-  } else {
-    switch(filters.room) {
-      case '1':
-      case '2':
-      case '3':
-        query.roomsFrom = parseInt(filters.room);
-        query.roomsTo = parseInt(filters.room);
-        break;
-      case '4+':
-        query.roomsFrom = 4;
-        break;
-    }
-  }
-
-  return query;
-}
+import useFilters from '../../hooks/filters';
 
 function SearchPage() {
   const navigate = useNavigate();
-  const [activePage, setPage] = useState(1);
-  const { query: queryProperties, totalItems, properties, isLoading } = usePropertiesSearch();
-  const [filters, setFilters] = useState<FilterValues>({
-    location: null,
-    priceFrom: null,
-    priceTo: null,
-    isLookForNeighboor: false,
-    room: null,
-  });
+  const {
+    activePage,
+    nextPage,
+    totalItems,
+    properties,
+    isLoading
+  } = usePropertiesSearch();
+  const { filters, setFilters } = useFilters();
   const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
   const { track } = useAnalytics();
 
   const handleFiltersApply = useCallback((filters: FilterValues) => {
-    console.log('handleFiltersApply', filters);
     setFilters(filters);
-    setPage(1);
     track('filters_applied', { ...filters });
     closeFiltersModal();
-  }, [setFilters, setPage, closeFiltersModal, track]);
+    document.body.scrollIntoView({ behavior: 'smooth' });
+  }, [setFilters, closeFiltersModal, track]);
 
-  const fetchData = useCallback(() => setPage((page) => page + 1), [setPage]);
-
-  console.log('Render seach page', properties.length, activePage, totalItems);
+  const fetchData = useCallback(() => {
+    nextPage();
+  }, [nextPage]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -98,15 +65,6 @@ function SearchPage() {
       return navigate(`/property/${value}`);
     }
   }, [navigate]);
-  
-  useEffect(() => {
-    console.log('useEffect', activePage, filters);
-    const query = buildQueryFromFilters(filters);
-    queryProperties({
-      query,
-      pagination: { page: activePage, perPage: ITEMS_PER_PAGE }
-    });
-  }, [queryProperties, activePage, filters]);
 
   const filtersModal = useMemo(() => {
     return (
@@ -179,4 +137,4 @@ function SearchPage() {
   )
 }
 
-export default SearchPage;
+export default memo(SearchPage);

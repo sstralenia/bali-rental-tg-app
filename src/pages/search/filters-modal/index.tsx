@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import {
   Title,
   Button,
@@ -44,13 +44,7 @@ type Props = {
 }
 
 const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onApply }) => {
-  const [filters, setFilters] = useState<FilterValues>(initialFilters || {
-    location: null,
-    room: 'none',
-    isLookForNeighboor: false,
-    priceFrom: null,
-    priceTo: null,
-  });
+  const [filters, setFilters] = useState<FilterValues>(initialFilters);
   const { locations } = useLocations();
   const locationOptions = useMemo(() => {
     return locations.map(location => ({
@@ -67,7 +61,7 @@ const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onA
       isLookForNeighboor: filters.isLookForNeighboor || false,
       room: filters.isLookForNeighboor ? null : filters.room,
     });
-  }, [filters.location, filters.priceFrom, filters.priceTo, filters.room, onApply]);
+  }, [filters, onApply]);
   const handleReset = useCallback(() => {
     setFilters({
       location: null,
@@ -77,21 +71,6 @@ const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onA
       room: 'none',
     });
   }, [setFilters]);
-
-  // useEffect(() => {
-  //   if (opened) {
-  //     document.body.dataset['scrollLocked'] = '1';
-  //   } else {
-  //     delete document.body.dataset['scrollLocked'];
-  //   }
-  // }, [opened])
-
-  useEffect(() => {
-    setFilters(filters => ({
-      ...filters,
-      room: filters.isLookForNeighboor ? null : 'none',
-    }));
-  }, [filters.isLookForNeighboor]);
 
   return (
     <Container className={`filters-modal ${opened && 'opened'}`}>
@@ -134,7 +113,11 @@ const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onA
         </Radio.Group>
         <Checkbox
           checked={filters.isLookForNeighboor}
-          onChange={e => setFilters((current) => ({ ...current, isLookForNeighboor: e.currentTarget.checked }))}
+          onChange={e => setFilters((current) => ({
+            ...current,
+            isLookForNeighboor: e.currentTarget.checked,
+            room: e.currentTarget.checked ? null : (current.room ?? 'none'),
+          }))}
           label="Ищут соседа"
         />
         
