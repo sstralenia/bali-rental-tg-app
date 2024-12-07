@@ -1,6 +1,6 @@
 import mixpanel from 'mixpanel-browser';
 
-mixpanel.init('8c173e44bf7c07c0439f383ae92b2a7f', {
+mixpanel.init(import.meta.env.VITE_MIXPANEL_TOKEN, {
   debug: true,
   track_pageview: true,
   persistence: "localStorage",
