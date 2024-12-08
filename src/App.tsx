@@ -4,8 +4,9 @@ import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 
 import {
-  createBrowserRouter,
-  RouterProvider,
+  BrowserRouter,
+  Route,
+  Routes,
 } from 'react-router-dom';
 
 import SearchPage from './pages/search';
@@ -18,24 +19,6 @@ import { StoreProvider } from './store';
 const theme = createTheme({
   fontFamily: 'Inter, sans-serif',
 });
-
-const router = createBrowserRouter([
-  {
-    id: 'search',
-    path: '/',
-    element: <SearchPage/>
-  },
-  {
-    id: 'shortlisted',
-    path: '/shortlisted',
-    element: <ShortlistPage/>
-  },
-  {
-    
-    path: '/property/:propertyId',
-    element: <PropertyPage/>
-  },
-]);
 
 function App() {
   const { identify, track, setProfileInfo } = useAnalytics();
@@ -55,7 +38,13 @@ function App() {
   return (
     <MantineProvider theme={theme}>
       <StoreProvider>
-        <RouterProvider router={router} />
+        <BrowserRouter basename={import.meta.env.VITE_BASE_URL}>
+          <Routes>
+            <Route path='/' element={<SearchPage/>} index/>
+            <Route path='/shortlisted' element={<ShortlistPage/>} />
+            <Route path='/property/:propertyId' element={<PropertyPage/>} />
+          </Routes>
+        </BrowserRouter>
       </StoreProvider>
     </MantineProvider>
   )
