@@ -13,7 +13,7 @@ import { formatLocation } from '../../formatters/location';
 const {
   VITE_APP_URL: APP_URL,
   VITE_BOT_USERNAME: BOT_USERNAME,
-  VITE_SUPPORT_USERNAME: SUPPORT_USERNAME,
+  // VITE_SUPPORT_USERNAME: SUPPORT_USERNAME,
 } = import.meta.env;
 
 type Props = {
@@ -71,23 +71,23 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     window.location.href = fullUrl;
   }, [property, track]);
 
-  const handleOrderView = useCallback(() => {
-    if (!property) {
-      return;
-    }
+//   const handleOrderView = useCallback(() => {
+//     if (!property) {
+//       return;
+//     }
 
-    track('property_ordered_view', { propertyId: property?.id });
+//     track('property_ordered_view', { propertyId: property?.id });
 
-    const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
-    const text = `
-Привет!%0A
-Хотел бы заказать просмотр объекта.%0A
-Локация: ${formatLocation(property?.location)}%0A
-Ссылка: ${url}
-    `;
+//     const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
+//     const text = `
+// Привет!%0A
+// Хотел бы заказать просмотр объекта.%0A
+// Локация: ${formatLocation(property?.location)}%0A
+// Ссылка: ${url}
+//     `;
 
-    Telegram.WebApp.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}?text=${text}`);
-  }, [property, track]);
+//     Telegram.WebApp.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}?text=${text}`);
+//   }, [property, track]);
 
   if (isLoading || !property) {
     return <LoadingOverlay visible loaderProps={{ color: '#FF5A5F' }}/>
