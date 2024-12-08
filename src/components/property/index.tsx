@@ -194,12 +194,12 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
             )
           }
 
-          <Button
+          {/* <Button
             onClick={handleOrderView}
             color="#FF5A5F"
           >
             Заказать просмотр
-          </Button>
+          </Button> */}
         </Stack>
       </Box>
     </Container>
