@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect } from 'react';
-import { Container, Box, Title, Text, Group, Button, LoadingOverlay, ActionIcon } from '@mantine/core';
+import { Container, Box, Title, Text, Group, Button, LoadingOverlay, ActionIcon, Stack } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import { IconChevronLeft, IconUpload, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Property as PropertyType } from '../../types';
@@ -10,7 +10,11 @@ import { formatMoney } from '../../formatters/money';
 import { formatDate } from '../../formatters/date';
 import { formatLocation } from '../../formatters/location';
 
-const APP_URL = import.meta.env.VITE_APP_URL;
+const {
+  VITE_APP_URL: APP_URL,
+  VITE_BOT_USERNAME: BOT_USERNAME,
+  VITE_SUPPORT_USERNAME: SUPPORT_USERNAME,
+} = import.meta.env;
 
 type Props = {
   onBack: () => void;
@@ -20,14 +24,22 @@ type Props = {
   isLoading?: boolean;
 }
 
+const CONTACT_TEXT = `
+Привет!%0A
+Увидел объявление на @${BOT_USERNAME}%0A
+Скажи, пожалуйста, актуально ли?
+`;
+
 const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist }) => {
   const { track } = useAnalytics();
   const houseType = formatHouseType(property?.house_type ?? '');
-  const canContact = (property?.source === 'telegram' && property?.username) || (property?.source === 'facebook' && property?.link);
+  const canContact = 
+    (property?.source === 'telegram' && property?.username) ||
+    (property?.source === 'facebook' && property?.link);
 
   useEffect(() => {
     if (property?.id) {
-      track('property_viewed', { propertyId: property?.id });
+      track('property_viewed', { propertyId: property.id });
     }
   }, [property?.id, track]);
 
@@ -35,7 +47,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     track('property_contacted', { propertyId: property?.id });
 
     if (property?.source === 'telegram') {
-      Telegram.WebApp.openTelegramLink(`https://t.me/${property?.username}`);
+      Telegram.WebApp.openTelegramLink(`https://t.me/${property?.username}?text=${CONTACT_TEXT}`);
     } else {
       Telegram.WebApp.openLink(property?.link ?? '', { try_instant_view: true });
     }
@@ -49,10 +61,32 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     track('property_shared', { propertyId: property?.id });
 
     const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
-    const text = `📍 ${formatLocation(property?.location)}, ${formatHouseType(property.house_type)}%0A🏠 ${formatRooms(property.rooms)}%0A💵 ${formatMoney(property.price, 'IDR')}`;
+    const text = `
+📍 ${formatLocation(property?.location)}, ${formatHouseType(property.house_type)}%0A
+🏠 ${formatRooms(property.rooms)}%0A
+💵 ${formatMoney(property.price, 'IDR')}
+    `;
     const fullUrl = `https://t.me/share/url?url=${url}&text=${text}`;
 
     window.location.href = fullUrl;
+  }, [property, track]);
+
+  const handleOrderView = useCallback(() => {
+    if (!property) {
+      return;
+    }
+
+    track('property_ordered_view', { propertyId: property?.id });
+
+    const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
+    const text = `
+Привет!%0A
+Хотел бы заказать просмотр объекта.%0A
+Локация: ${formatLocation(property?.location)}%0A
+Ссылка: ${url}
+    `;
+
+    Telegram.WebApp.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}?text=${text}`);
   }, [property, track]);
 
   if (isLoading || !property) {
@@ -146,19 +180,27 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
           )
         }
 
-        {
-          canContact && (
-            <Group mt="sm" mb="xs">
+
+        <Stack mt="sm" mb="xs">
+          {
+            canContact && (
               <Button
                 onClick={handleContact}
                 color="#FF5A5F"
-                flex="1"
+                variant='outline'
               >
                 Написать
               </Button>
-            </Group>
-          )
-        }
+            )
+          }
+
+          <Button
+            onClick={handleOrderView}
+            color="#FF5A5F"
+          >
+            Заказать просмотр
+          </Button>
+        </Stack>
       </Box>
     </Container>
   );
