@@ -43,6 +43,7 @@ export const StoreProvider: FC<StoreProviderProps> = ({ children }) => {
     totalItems: 0,
     page: 1,
   });
+  const [scrollPosition, setScrollPosition] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
     setShortlistedProperties(getProperties());
@@ -71,6 +72,8 @@ export const StoreProvider: FC<StoreProviderProps> = ({ children }) => {
         setFilters,
         properties,
         setProperties: (fn) => setProperties(prev => fn(prev)),
+        scrollPosition,
+        setScrollPosition: (key, position) => setScrollPosition(prev => ({ ...prev, [key]: position })),
       }}
     >
       {children}

@@ -1,7 +1,6 @@
 import { AppShell, Container, Text } from '@mantine/core';
 import { IconHeart, IconSearch } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-// import { useRouter } from '../../hooks/router';
 
 const tabs = [
   {
@@ -17,7 +16,6 @@ const tabs = [
 ]
 
 const NavigationBar = () => {
-  // const { location, navigate } = useRouter();
   const navigate = useNavigate();
   const location = useLocation();
 

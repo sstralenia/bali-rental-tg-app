@@ -18,6 +18,7 @@ import FiltersButton from './filters-button';
 import FiltersModal from './filters-modal';
 import Layout from '../../layouts/main';
 import useFilters from '../../hooks/filters';
+import { useScroll } from '../../hooks/scroll';
 
 function SearchPage() {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ function SearchPage() {
     isLoading
   } = usePropertiesSearch();
   const { filters, setFilters } = useFilters();
+  const { scrollPosition, handleScroll } = useScroll('search');
   const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
   const { track } = useAnalytics();
 
@@ -65,6 +67,10 @@ function SearchPage() {
       return navigate(`/property/${value}`);
     }
   }, [navigate]);
+
+  useEffect(() => {
+    window.scrollTo(0, scrollPosition);
+  }, []);
 
   const filtersModal = useMemo(() => {
     return (
@@ -118,6 +124,7 @@ function SearchPage() {
               loader={loader}
               endMessage={endMessage}
               style={{ overflow: 'hidden' }}
+              onScroll={handleScroll}
             >
               <PropertyList
                 properties={properties}

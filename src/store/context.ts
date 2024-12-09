@@ -15,6 +15,10 @@ export type StoreContextType = {
   setFilters: (filters: FilterValues) => void;
   properties: Properties;
   setProperties: (fn: (prev: Properties) => Properties) => void;
+  scrollPosition: {
+    [key: string]: number;
+  },
+  setScrollPosition: (key: string, position: number) => void;
 };
 
 export const StoreContext = createContext<StoreContextType>({
@@ -28,5 +32,6 @@ export const StoreContext = createContext<StoreContextType>({
     totalItems: 0,
   },
   setProperties: () => {},
-
+  scrollPosition: {},
+  setScrollPosition: () => {},
 });
