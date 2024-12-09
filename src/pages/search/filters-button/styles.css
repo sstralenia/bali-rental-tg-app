@@ -1,6 +1,6 @@
 .button {
   position: fixed;
-  bottom: 80px;
+  bottom: calc(80px + var(--tg-safe-area-inset-bottom));
   right: 16px;
   z-index: 10;
   background-color: white;

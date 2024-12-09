@@ -23,7 +23,7 @@ function ShortlistPage() {
 
   return (
     <Layout>
-      <Container style={{ padding: '20px' }} onScroll={e => console.log(e)}>
+      <Container style={{ padding: '20px', paddingBottom: 'calc(20px + var(--tg-safe-area-inset-bottom))' }}>
         {
           shortlistedProperties.length === 0 && (
             <Center h="calc(100vh - 80px)"><Text>Нет избранных объявлений</Text></Center>
