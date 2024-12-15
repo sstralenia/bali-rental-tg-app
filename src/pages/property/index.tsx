@@ -14,7 +14,11 @@ function PropertyPage() {
   const isShortlisted = shortlistedProperties.some(p => p.id === propertyId);
 
   const handleBack = useCallback(() => {
-    navigate(-1)
+    if (history.length > 1) {
+      navigate(-1)
+    } else {
+      navigate('/')
+    }
   }, [navigate]);
 
   useEffect(() => {
