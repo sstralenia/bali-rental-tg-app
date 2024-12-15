@@ -9,6 +9,7 @@ import { formatHouseType } from '../../formatters/house-type';
 import { formatMoney } from '../../formatters/money';
 import { formatDate } from '../../formatters/date';
 import { formatLocation } from '../../formatters/location';
+import { formatString } from '../../utils/string';
 
 const {
   VITE_APP_URL: APP_URL,
@@ -24,10 +25,17 @@ type Props = {
   isLoading?: boolean;
 }
 
-const CONTACT_TEXT = `
+const CONTACT_TEXT_TEMPLATE = `
 Привет!%0A
-Увидел объявление на @${BOT_USERNAME}%0A
-Скажи, пожалуйста, актуально ли?
+Увидел объявление на @{{botName}}%0A
+Скажи, пожалуйста, актуально ли?%0A
+{{link}}
+`;
+
+const SHARE_TEXT_TEMPLATE = `
+📍 {{location}}, {{houseType}}%0A
+🏠 {{rooms}}%0A
+💵 {{price}}%0A
 `;
 
 const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist }) => {
@@ -47,7 +55,8 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     track('property_contacted', { propertyId: property?.id });
 
     if (property?.source === 'telegram') {
-      Telegram.WebApp.openTelegramLink(`https://t.me/${property?.username}?text=${CONTACT_TEXT}`);
+      const text = formatString(CONTACT_TEXT_TEMPLATE, { botName: BOT_USERNAME, link: property?.link });
+      Telegram.WebApp.openTelegramLink(`https://t.me/${property?.username}?text=${text}`);
     } else {
       Telegram.WebApp.openLink(property?.link ?? '', { try_instant_view: true });
     }
@@ -61,11 +70,13 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     track('property_shared', { propertyId: property?.id });
 
     const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
-    const text = `
-📍 ${formatLocation(property?.location)}, ${formatHouseType(property.house_type)}%0A
-🏠 ${formatRooms(property.rooms)}%0A
-💵 ${formatMoney(property.price, 'IDR')}
-    `;
+    const text = formatString(SHARE_TEXT_TEMPLATE, {
+      location: formatLocation(property?.location),
+      houseType: formatHouseType(property.house_type),
+      rooms: formatRooms(property.rooms),
+      price: formatMoney(property.price, 'IDR'),
+    });
+
     const fullUrl = `https://t.me/share/url?url=${url}&text=${text}`;
 
     window.location.href = fullUrl;
