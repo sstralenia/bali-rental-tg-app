@@ -9,7 +9,7 @@ const locationMap: Record<string, string> = {
   'nusa dua': 'Нуса Дуа',
   'sanur': 'Санур',
   'ungasan': 'Унгасан',
-  'unagasan': 'Унагасан',
+  'unagasan': 'Унгасан',
 };
 
 export function formatLocation(location: string | null): string {

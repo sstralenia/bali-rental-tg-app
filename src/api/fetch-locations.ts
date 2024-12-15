@@ -18,5 +18,15 @@ export async function fetchLocations(): Promise<string[]> {
     query: FETCH_LOCATIONS_QUERY,
   });
 
-  return result.data.tg_announcement.map(p => p.location);
+  const locations = new Set<string>();
+
+  result.data.tg_announcement.forEach(p => {
+    if (p.location === 'unagasan') {
+      locations.add('ungasan');
+    } else {
+      locations.add(p.location);
+    }
+  });
+
+  return Array.from(locations);
 }
