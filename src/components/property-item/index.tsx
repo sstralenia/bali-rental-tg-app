@@ -88,8 +88,8 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }
         {formatLocation(property.location)}
         &nbsp;&nbsp;•&nbsp;&nbsp;
         {formatRooms(property.rooms)}
-        &nbsp;&nbsp;•&nbsp;&nbsp;
-        {capitalize(property.source)}
+        {/* &nbsp;&nbsp;•&nbsp;&nbsp;
+        {capitalize(property.source)} */}
       </Text>
 
       
