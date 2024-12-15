@@ -1,6 +1,7 @@
 import { FC, useCallback, useEffect } from 'react';
 import { Container, Box, Title, Text, Group, Button, LoadingOverlay, ActionIcon, Stack } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
+import { useOs } from '@mantine/hooks';
 import { IconChevronLeft, IconUpload, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Property as PropertyType } from '../../types';
 import useAnalytics from '../../hooks/analytics';
@@ -38,12 +39,18 @@ const SHARE_TEXT_TEMPLATE = `
 💵 {{price}}%0A
 `;
 
+const buildPropertyUrl = (property: PropertyType) => {
+  return `${APP_URL}?startapp=propertyId_${property?.id}`;
+}
+
 const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist }) => {
   const { track } = useAnalytics();
+  const os = useOs();
   const houseType = formatHouseType(property?.house_type ?? '');
   const canContact = 
     (property?.source === 'telegram' && property?.username) ||
     (property?.source === 'facebook' && property?.link);
+  const isLaptop = ['windows', 'macos', 'linux'].includes(os);
 
   useEffect(() => {
     if (property?.id) {
@@ -55,7 +62,10 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     track('property_contacted', { propertyId: property?.id });
 
     if (property?.source === 'telegram') {
-      const text = formatString(CONTACT_TEXT_TEMPLATE, { botName: BOT_USERNAME, link: property?.link });
+      const text = formatString(CONTACT_TEXT_TEMPLATE, {
+        botName: BOT_USERNAME,
+        link: buildPropertyUrl(property),
+      });
       Telegram.WebApp.openTelegramLink(`https://t.me/${property?.username}?text=${text}`);
     } else {
       Telegram.WebApp.openLink(property?.link ?? '', { try_instant_view: true });
@@ -69,7 +79,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
 
     track('property_shared', { propertyId: property?.id });
 
-    const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
+    const url = buildPropertyUrl(property);
     const text = formatString(SHARE_TEXT_TEMPLATE, {
       location: formatLocation(property?.location),
       houseType: formatHouseType(property.house_type),
@@ -152,11 +162,10 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
       </Group>
       <Carousel
         withIndicators
-        withControls={false}
+        withControls={isLaptop}
         slideGap={0}
         align="start"
         style={{ marginBottom: '7px' }}
-        // onClick={open}
       >
         {
           property.media.map((media, index) => (
