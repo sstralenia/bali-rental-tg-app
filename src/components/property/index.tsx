@@ -98,7 +98,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
       size='lg'
       style={{
         padding: 0,
-        paddingBottom: '20px',
+        paddingBottom: 'calc(20px + var(--tg-safe-area-inset-bottom))',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
