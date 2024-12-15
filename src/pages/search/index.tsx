@@ -17,7 +17,6 @@ import { FilterValues } from './types';
 import FiltersButton from './filters-button';
 import FiltersModal from './filters-modal';
 import Layout from '../../layouts/main';
-import useFilters from '../../hooks/filters';
 import { useScroll } from '../../hooks/scroll';
 
 function SearchPage() {
@@ -27,19 +26,20 @@ function SearchPage() {
     nextPage,
     totalItems,
     properties,
-    isLoading
+    isLoading,
+    filters,
+    applyFilters,
   } = usePropertiesSearch();
-  const { filters, setFilters } = useFilters();
   const { scrollPosition, handleScroll } = useScroll('search');
   const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
   const { track } = useAnalytics();
 
   const handleFiltersApply = useCallback((filters: FilterValues) => {
-    setFilters(filters);
+    applyFilters(filters);
     track('filters_applied', { ...filters });
     closeFiltersModal();
     document.body.scrollIntoView({ behavior: 'smooth' });
-  }, [setFilters, closeFiltersModal, track]);
+  }, [applyFilters, closeFiltersModal, track]);
 
   const fetchData = useCallback(() => {
     nextPage();

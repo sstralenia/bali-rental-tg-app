@@ -12,7 +12,6 @@ import { formatMoney } from '../../formatters/money';
 import { formatRooms } from '../../formatters/rooms';
 import { formatDate } from '../../formatters/date';
 import { formatLocation } from '../../formatters/location';
-import { capitalize } from '../../utils/string';
 
 type Props = {
   property: Property;

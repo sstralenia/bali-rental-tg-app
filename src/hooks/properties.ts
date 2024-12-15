@@ -38,6 +38,7 @@ export default function usePropertiesSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const {
     filters,
+    setFilters,
     properties: storedProperties,
     setProperties: setStoredProperties
   } = useContext(StoreContext);
@@ -84,16 +85,17 @@ export default function usePropertiesSearch() {
     query({ query: buildQueryFromFilters(filters), page: storedProperties.page });
   }, [storedProperties.page]);
 
-  useEffect(() => {
-    query({ query: buildQueryFromFilters(filters), page: 1 });
-  }, [filters]);
-
   const nextPage = useCallback(() => {
     setStoredProperties((prev: Properties) => ({
       ...prev,
       page: prev.page + 1,
     }));
   }, [setStoredProperties]);
+
+  const applyFilters = useCallback((filters: FilterValues) => {
+    setFilters(filters);
+    query({ query: buildQueryFromFilters(filters), page: 1 });
+  }, [setFilters, query]);
 
   return {
     isLoading,
@@ -102,5 +104,7 @@ export default function usePropertiesSearch() {
     error,
     activePage: storedProperties.page,
     totalItems: storedProperties.totalItems,
+    filters,
+    applyFilters,
   };
 }
