@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Property from '../../components/property';
 import useProperty from '../../hooks/property';
 import useShortlistedProperties from '../../hooks/shortlistedProperties';
@@ -7,6 +7,7 @@ import Layout from '../../layouts/main';
 
 function PropertyPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const params = useParams();
   const { isLoading, property, query } = useProperty();
   const { propertyId } = params as { propertyId: string };
@@ -14,20 +15,16 @@ function PropertyPage() {
   const isShortlisted = shortlistedProperties.some(p => p.id === propertyId);
 
   const handleBack = useCallback(() => {
-    if (history.length > 1) {
+    if (location.state?.idx > 1) {
       navigate(-1)
     } else {
       navigate('/')
     }
-  }, [navigate]);
+  }, [navigate, location.state?.idx]);
 
   useEffect(() => {
     query(propertyId ?? '');
   }, [propertyId, query]);
-
-  useEffect(() => {
-    document.getElementById('property-root-component')?.scrollTo(0, 0);
-  }, [propertyId])
 
   return (
     <Layout>
