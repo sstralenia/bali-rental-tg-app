@@ -64,7 +64,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     if (property?.source === 'telegram') {
       const text = formatString(CONTACT_TEXT_TEMPLATE, {
         botName: BOT_USERNAME,
-        link: buildPropertyUrl(property),
+        link: property.link,
       });
       Telegram.WebApp.openTelegramLink(`https://t.me/${property?.username}?text=${text}`);
     } else {
