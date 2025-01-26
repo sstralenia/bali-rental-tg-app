@@ -15,7 +15,7 @@ import { formatString } from '../../utils/string';
 const {
   VITE_APP_URL: APP_URL,
   VITE_BOT_USERNAME: BOT_USERNAME,
-  // VITE_SUPPORT_USERNAME: SUPPORT_USERNAME,
+  VITE_SUPPORT_USERNAME: SUPPORT_USERNAME,
 } = import.meta.env;
 
 type Props = {
@@ -26,12 +26,8 @@ type Props = {
   isLoading?: boolean;
 }
 
-const CONTACT_TEXT_TEMPLATE = `
-Привет!%0A
-Увидел объявление на @{{botName}}%0A
-Скажи, пожалуйста, актуально ли?%0A
-{{link}}
-`;
+const CONTACT_TEXT_TEMPLATE_RU = `Привет!%0AУвидел объявление на @{{botName}}%0AСкажи, пожалуйста, актуально ли%3F%0A{{link}}`;
+const CONTACT_TEXT_TEMPLATE_EN = `Hello!%0AI saw an ad on @{{botName}}%0APlease tell me if it's still available%3F%0A{{link}}`;
 
 const SHARE_TEXT_TEMPLATE = `
 📍 {{location}}, {{houseType}}%0A
@@ -61,12 +57,18 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
   const handleContact = () => {
     track('property_contacted', { propertyId: property?.id });
 
+    const template = os === 'macos' ? CONTACT_TEXT_TEMPLATE_EN : CONTACT_TEXT_TEMPLATE_RU
+
+    console.log('template', template)
+
     if (property?.source === 'telegram') {
-      const text = formatString(CONTACT_TEXT_TEMPLATE, {
+      const text = formatString(template, {
         botName: BOT_USERNAME,
-        link: property.link,
+        link: encodeURIComponent(property.link),
       });
-      Telegram.WebApp.openTelegramLink(`https://t.me/${property?.username}?text=${text}`);
+      console.log('text', text)
+      const url = `https://t.me/${property?.username}?text=${text}`;
+      Telegram.WebApp.openTelegramLink(url);
     } else {
       Telegram.WebApp.openLink(property?.link ?? '', { try_instant_view: true });
     }
@@ -92,23 +94,23 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     window.location.href = fullUrl;
   }, [property, track]);
 
-//   const handleOrderView = useCallback(() => {
-//     if (!property) {
-//       return;
-//     }
+  const handleOrderView = useCallback(() => {
+    if (!property) {
+      return;
+    }
 
-//     track('property_ordered_view', { propertyId: property?.id });
+    track('property_ordered_view', { propertyId: property?.id });
 
-//     const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
-//     const text = `
-// Привет!%0A
-// Хотел бы заказать просмотр объекта.%0A
-// Локация: ${formatLocation(property?.location)}%0A
-// Ссылка: ${url}
-//     `;
+    const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
+    const text = `
+Привет!%0A
+Хотел бы заказать просмотр объекта.%0A
+Локация: ${formatLocation(property?.location)}%0A
+Ссылка: ${url}
+    `;
 
-//     Telegram.WebApp.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}?text=${text}`);
-//   }, [property, track]);
+    Telegram.WebApp.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}?text=${text}`);
+  }, [property, track]);
 
   if (isLoading || !property) {
     return <LoadingOverlay visible loaderProps={{ color: '#FF5A5F' }}/>
@@ -119,7 +121,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
       size='lg'
       style={{
         padding: 0,
-        paddingBottom: 'calc(20px + var(--tg-safe-area-inset-bottom))',
+        paddingBottom: 'calc(20px + var(--tg-safe-area-inset-bottom, 0px))',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -214,12 +216,12 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
             )
           }
 
-          {/* <Button
+          <Button
             onClick={handleOrderView}
             color="#FF5A5F"
           >
             Заказать просмотр
-          </Button> */}
+          </Button>
         </Stack>
       </Box>
     </Container>
