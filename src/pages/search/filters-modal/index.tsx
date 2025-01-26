@@ -81,13 +81,26 @@ const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onA
             <IconX size={20} onClick={onClose} />
           </Box>
         </Group>
-        <Select
-          label="Локация"
-          placeholder="Выберите локацию"
-          data={locationOptions}
-          value={filters.location}
-          onChange={(location) => setFilters((current) => ({ ...current, location }))}
-        />
+        <Stack gap="0">
+          <Select
+            label="Локация"
+            placeholder="Выберите локацию"
+            data={locationOptions}
+            value={filters.location}
+            onChange={(location) => setFilters((current) => ({ ...current, location }))}
+          />
+          {
+            filters.location && (
+              <Text
+                mt="4px"
+                size="xs"
+                color="#767676"
+              >
+                Радиус поиска: 6км
+              </Text>
+            )
+          }
+        </Stack>
         <Radio.Group
           label="Кол-во комнат"
           value={filters.room}

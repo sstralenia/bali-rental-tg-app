@@ -9,8 +9,9 @@ import { formatRooms } from '../../formatters/rooms';
 import { formatHouseType } from '../../formatters/house-type';
 import { formatMoney } from '../../formatters/money';
 import { formatDate } from '../../formatters/date';
-import { formatLocation } from '../../formatters/location';
+import { formatCity } from '../../formatters/city';
 import { formatString } from '../../utils/string';
+import { formatLocation } from '../../formatters/location';
 
 const {
   VITE_APP_URL: APP_URL,
@@ -180,7 +181,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
       <Box style={{ padding: '0px 20px' }}>
         <Box mb="3">
           <Title order={3}>
-            {formatLocation(property.location)}{ houseType && `, ${houseType}` }
+            {formatCity(property.city)}{ houseType && `, ${houseType}` }
           </Title>
           <Title order={4} style={{ marginTop: '4px', marginBottom: '9px' }}>
             <Text style={{ fontWeight: 'bold' }}>

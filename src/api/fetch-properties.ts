@@ -34,6 +34,7 @@ const FETCH_PROPERTIES_QUERY = gql`
   query Q ($limit: Int, $offset: Int, $where: announcements_bool_exp) {
     announcements(limit: $limit, offset: $offset, where: $where, order_by: {posted_at: desc}) {
       location
+      city
       source
       posted_at
       house_type

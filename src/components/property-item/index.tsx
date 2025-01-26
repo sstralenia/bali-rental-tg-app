@@ -11,7 +11,7 @@ import { Property } from '../../types';
 import { formatMoney } from '../../formatters/money';
 import { formatRooms } from '../../formatters/rooms';
 import { formatDate } from '../../formatters/date';
-import { formatLocation } from '../../formatters/location';
+import { formatCity } from '../../formatters/city';
 
 type Props = {
   property: Property;
@@ -84,7 +84,7 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }
       </Group>
 
       <Text style={{ color: '#6A6A6A', fontSize: '14px' }}>
-        {formatLocation(property.location)}
+        {formatCity(property.city)}
         &nbsp;&nbsp;•&nbsp;&nbsp;
         {formatRooms(property.rooms)}
         {/* &nbsp;&nbsp;•&nbsp;&nbsp;
