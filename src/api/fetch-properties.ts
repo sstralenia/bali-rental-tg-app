@@ -3,6 +3,9 @@ import { Property } from '../types';
 import apolloClient from './apollo-client';
 import { mapProperty } from './helpers';
 
+const tableName = import.meta.env.VITE_ANNOUNCEMENTS_TABLE as string;
+const aggregationName = `${tableName}_aggregate`;
+
 export type Query = {
   location?: string;
   priceFrom?: number;
@@ -16,11 +19,12 @@ export type Pagination = {
   perPage: number;
 }
 
-type FetchPropertiesResponse = {
-  announcements: Property[]
-  announcements_aggregate: {
+type FetchPropertiesResponse<TableName extends string, AggregationName extends string> = {
+  [K in TableName]: Property[]
+} & {
+  [K in AggregationName]: {
     aggregate: {
-      count: number
+      count: number;
     }
   }
 }
@@ -31,8 +35,8 @@ type FetchPropertiesResult = {
 }
 
 const FETCH_PROPERTIES_QUERY = gql`
-  query Q ($limit: Int, $offset: Int, $where: announcements_bool_exp) {
-    announcements(limit: $limit, offset: $offset, where: $where, order_by: {posted_at: desc}) {
+  query Q ($limit: Int, $offset: Int, $where: ${tableName}_bool_exp) {
+    ${tableName}(limit: $limit, offset: $offset, where: $where, order_by: {posted_at: desc}) {
       location
       city
       source
@@ -47,7 +51,7 @@ const FETCH_PROPERTIES_QUERY = gql`
       text
       username
     }
-    announcements_aggregate(where: $where) {
+    ${tableName}_aggregate(where: $where) {
       aggregate {
         count
       }
@@ -105,7 +109,7 @@ function buildWhereClause(query: Query): Record<string, unknown> {
 }
 
 export async function fetchProperties({ query, pagination }: { query: Query, pagination: Pagination }): Promise<FetchPropertiesResult> {
-  const result = await apolloClient.query<FetchPropertiesResponse>({
+  const result = await apolloClient.query<FetchPropertiesResponse<typeof tableName, typeof aggregationName>>({
     query: FETCH_PROPERTIES_QUERY,
     variables: {
       where: buildWhereClause(query),
@@ -114,11 +118,11 @@ export async function fetchProperties({ query, pagination }: { query: Query, pag
     }
   });
 
-  const properties = result.data.announcements;
+  const properties = result.data[tableName];
   const mappedProperties = properties.map(mapProperty);
 
   return {
     properties: mappedProperties,
-    total: result.data.announcements_aggregate?.aggregate?.count ?? mappedProperties.length,
+    total: result.data[aggregationName]?.aggregate?.count ?? mappedProperties.length,
   };
 }

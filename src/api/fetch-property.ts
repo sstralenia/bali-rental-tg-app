@@ -3,9 +3,11 @@ import { Property } from '../types';
 import apolloClient from './apollo-client';
 import { mapProperty } from './helpers';
 
+const tableName = import.meta.env.VITE_ANNOUNCEMENTS_TABLE as string;
+
 const FETCH_PROPERTY_QUERY = gql`
-  query Q ($where: announcements_bool_exp) {
-    announcements(limit: 1, offset: 0, where: $where) {
+  query Q ($where: ${tableName}_bool_exp) {
+    ${tableName}(limit: 1, offset: 0, where: $where) {
       location
       city
       source
@@ -23,8 +25,8 @@ const FETCH_PROPERTY_QUERY = gql`
   }
 `;
 
-type FetchPropertyResponse = {
-  announcements: Property[]
+type FetchPropertyResponse<TableName extends string> = {
+  [K in TableName]: Property[]
 }
 
 export async function fetchProperty(id: string): Promise<Property | null> {
@@ -37,7 +39,7 @@ export async function fetchProperty(id: string): Promise<Property | null> {
     },
   });
 
-  const property = result.data.announcements?.[0];
+  const property = result.data[tableName]?.[0];
 
   if (!property) {
     return null;

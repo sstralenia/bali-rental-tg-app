@@ -9,6 +9,8 @@ export type Property = {
   media_amount: number;
   message_id: number;
   price: number;
+  currency: string;
+  price_type: 'monthly' | 'daily' | 'yearly' | 'custom' | null;
   rooms: number;
   text: string;
   username: string | null;
