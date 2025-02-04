@@ -89,17 +89,13 @@ const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onA
             value={filters.location}
             onChange={(location) => setFilters((current) => ({ ...current, location }))}
           />
-          {
-            filters.location && (
-              <Text
-                mt="4px"
-                size="xs"
-                color="#767676"
-              >
-                Радиус поиска: 6км
-              </Text>
-            )
-          }
+          <Text
+            mt="4px"
+            size="xs"
+            color="#767676"
+          >
+            Радиус поиска: 6км
+          </Text>
         </Stack>
         <Radio.Group
           label="Кол-во комнат"

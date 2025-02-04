@@ -30,6 +30,9 @@ type Props = {
 const CONTACT_TEXT_TEMPLATE_RU = `Привет!%0AУвидел объявление на @{{botName}}%0AСкажи, пожалуйста, актуально ли%3F%0A{{link}}`;
 const CONTACT_TEXT_TEMPLATE_EN = `Hello!%0AI saw an ad on @{{botName}}%0APlease tell me if it's still available%3F%0A{{link}}`;
 
+const ORDER_VIEW_TEXT_TEMPLATE_RU = `Привет!%0AХотел бы заказать просмотр объекта.%0AЛокация: {{location}}%0AСсылка: {{link}}`;
+const ORDER_VIEW_TEXT_TEMPLATE_EN = `Hello!%0AI want to order a viewing of the property.%0ALocation: {{location}}%0ALink: {{link}}`;
+
 const SHARE_TEXT_TEMPLATE = `
 📍 {{location}}, {{houseType}}%0A
 🏠 {{rooms}}%0A
@@ -58,9 +61,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
   const handleContact = () => {
     track('property_contacted', { propertyId: property?.id });
 
-    const template = os === 'macos' ? CONTACT_TEXT_TEMPLATE_EN : CONTACT_TEXT_TEMPLATE_RU
-
-    console.log('template', template)
+    const template = os === 'macos' ? CONTACT_TEXT_TEMPLATE_EN : CONTACT_TEXT_TEMPLATE_RU;
 
     if (property?.source === 'telegram') {
       const text = formatString(template, {
@@ -102,13 +103,13 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
 
     track('property_ordered_view', { propertyId: property?.id });
 
-    const url = `${APP_URL}?startapp=propertyId_${property?.id}`;
-    const text = `
-Привет!%0A
-Хотел бы заказать просмотр объекта.%0A
-Локация: ${formatLocation(property?.location)}%0A
-Ссылка: ${url}
-    `;
+    const propertyUrl = `${APP_URL}?startapp=propertyId_${property?.id}`;
+    const template = os === 'macos' ? ORDER_VIEW_TEXT_TEMPLATE_EN : ORDER_VIEW_TEXT_TEMPLATE_RU;
+
+    const text = formatString(template, {
+      location: formatCity(property?.city),
+      link: encodeURIComponent(propertyUrl),
+    });
 
     Telegram.WebApp.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}?text=${text}`);
   }, [property, track]);
