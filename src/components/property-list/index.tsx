@@ -2,7 +2,7 @@ import { FC, useCallback, useMemo } from 'react';
 import { Grid } from '@mantine/core';
 import PropertyItem from '../property-item';
 import useShortlistedProperties from '../../hooks/shortlistedProperties';
-import { Property } from '../../types';
+import { Property, Rate } from '../../types';
 import useAnalytics from '../../hooks/analytics';
 
 type Props = {
@@ -10,9 +10,10 @@ type Props = {
   columns?: number;
   source: 'search' | 'shortlist';
   onSelect: (property: Property) => void;
+  rates: Rate[];
 }
 
-const PropertyList: FC<Props> = ({ properties, columns = 1, source, onSelect }) => {
+const PropertyList: FC<Props> = ({ properties, columns = 1, source, onSelect, rates }) => {
   const { track } = useAnalytics();
   const { properties: shortlistedProperties, toggle: toggleShortlistProperty } = useShortlistedProperties();
 
@@ -40,6 +41,7 @@ const PropertyList: FC<Props> = ({ properties, columns = 1, source, onSelect }) 
               shortlisted={shortlistedPropertiesMap.has(p.id)}
               onShortlist={handleShortlist}
               onClick={onSelect}
+              rates={rates}
             />
           </Grid.Col>
         )

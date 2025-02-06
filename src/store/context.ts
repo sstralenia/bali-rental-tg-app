@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { Property } from '../types';
+import { Property, Rate } from '../types';
 import { FilterValues } from '../pages/search/types';
 
 export type Properties = {
@@ -19,6 +19,8 @@ export type StoreContextType = {
     [key: string]: number;
   },
   setScrollPosition: (key: string, position: number) => void;
+  rates: Rate[];
+  setRates: (rates: Rate[]) => void;
 };
 
 export const StoreContext = createContext<StoreContextType>({
@@ -34,4 +36,6 @@ export const StoreContext = createContext<StoreContextType>({
   setProperties: () => {},
   scrollPosition: {},
   setScrollPosition: () => {},
+  rates: [],
+  setRates: () => {},
 });

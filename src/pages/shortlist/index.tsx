@@ -6,11 +6,13 @@ import PropertyList from '../../components/property-list';
 import Layout from '../../layouts/main';
 import { useNavigate } from 'react-router-dom';
 import { useScroll } from '../../hooks/scroll';
+import useRates from '../../hooks/rates';
 
 function ShortlistPage() {
   const navigate = useNavigate();
   const { properties: shortlistedProperties } = useShortlistedProperties();
   const { scrollPosition, handleScroll } = useScroll('shortlist');
+  const { rates } = useRates();
 
   useEffect(() => {
     window.onscroll = handleScroll;
@@ -36,6 +38,7 @@ function ShortlistPage() {
               columns={1}
               onSelect={p => navigate(`/property/${p.id}`)}
               source="shortlist"
+              rates={rates}
             />
           )
         }

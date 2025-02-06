@@ -1,7 +1,8 @@
 import { FC, useState, useEffect } from 'react';
 import { Properties, StoreContext } from './context';
-import { Property } from '../types';
+import { Property, Rate } from '../types';
 import { FilterValues } from '../pages/search/types';
+import { fetchRates } from '../api';
 
 const SHORTLISTED_PROPERTIES_KEY = 'shortlisted-properties-v2';
 
@@ -44,9 +45,14 @@ export const StoreProvider: FC<StoreProviderProps> = ({ children }) => {
     page: 1,
   });
   const [scrollPosition, setScrollPosition] = useState<{ [key: string]: number }>({});
+  const [rates, setRates] = useState<Rate[]>([]);
 
   useEffect(() => {
     setShortlistedProperties(getProperties());
+  }, []);
+
+  useEffect(() => {
+    fetchRates().then(setRates);
   }, []);
 
   const toggleProperty = (property:  Property) => {
@@ -74,6 +80,8 @@ export const StoreProvider: FC<StoreProviderProps> = ({ children }) => {
         setProperties: (fn) => setProperties(prev => fn(prev)),
         scrollPosition,
         setScrollPosition: (key, position) => setScrollPosition(prev => ({ ...prev, [key]: position })),
+        rates,
+        setRates,
       }}
     >
       {children}

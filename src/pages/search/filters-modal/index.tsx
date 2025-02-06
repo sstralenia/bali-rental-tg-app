@@ -46,6 +46,7 @@ type Props = {
 const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onApply }) => {
   const [filters, setFilters] = useState<FilterValues>(initialFilters);
   const { locations } = useLocations();
+  
   const locationOptions = useMemo(() => {
     return locations.map(location => ({
       value: location,

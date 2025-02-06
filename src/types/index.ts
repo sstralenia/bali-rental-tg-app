@@ -1,3 +1,10 @@
+export enum PriceType {
+  MONTHLY = 'monthly',
+  DAILY = 'daily',
+  YEARLY = 'yearly',
+  CUSTOM = 'custom',
+}
+
 export type Property = {
   id: string;
   source: 'telegram' | 'facebook';
@@ -10,7 +17,7 @@ export type Property = {
   message_id: number;
   price: number;
   currency: string;
-  price_type: 'monthly' | 'daily' | 'yearly' | 'custom' | null;
+  price_type: PriceType | null;
   rooms: number;
   text: string;
   username: string | null;
@@ -18,4 +25,10 @@ export type Property = {
     url: string;
     alt: string;
   }[];
+}
+
+export type Rate = {
+  from_iso: string;
+  to_iso: string;
+  to_amount: number;
 }

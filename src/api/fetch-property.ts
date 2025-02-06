@@ -18,6 +18,8 @@ const FETCH_PROPERTY_QUERY = gql`
       media_amount
       message_id
       price
+      currency
+      price_type
       rooms
       text
       username

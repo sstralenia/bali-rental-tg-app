@@ -47,11 +47,13 @@ const FETCH_PROPERTIES_QUERY = gql`
       media_amount
       message_id
       price
+      currency
+      price_type
       rooms
       text
       username
     }
-    ${tableName}_aggregate(where: $where) {
+    ${aggregationName}(where: $where) {
       aggregate {
         count
       }

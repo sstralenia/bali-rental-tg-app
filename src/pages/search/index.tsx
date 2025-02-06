@@ -18,6 +18,7 @@ import FiltersButton from './filters-button';
 import FiltersModal from './filters-modal';
 import Layout from '../../layouts/main';
 import { useScroll } from '../../hooks/scroll';
+import useRates from '../../hooks/rates';
 
 function SearchPage() {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ function SearchPage() {
     applyFilters,
   } = usePropertiesSearch();
   const { scrollPosition, handleScroll } = useScroll('search');
+  const { rates } = useRates();
   const [isFiltersModalsOpened, { open: openFiltersModal, close: closeFiltersModal }] = useDisclosure(false);
   const { track } = useAnalytics();
 
@@ -131,6 +133,7 @@ function SearchPage() {
                 columns={1}
                 onSelect={p => navigate(`/property/${p.id}`)}
                 source="search"
+                rates={rates}
               />
             </InfiniteScroll>
           )

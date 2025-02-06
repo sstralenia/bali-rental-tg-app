@@ -3,7 +3,7 @@ import { Container, Box, Title, Text, Group, Button, LoadingOverlay, ActionIcon,
 import { Carousel } from '@mantine/carousel';
 import { useOs } from '@mantine/hooks';
 import { IconChevronLeft, IconUpload, IconHeart, IconHeartFilled } from '@tabler/icons-react';
-import { Property as PropertyType } from '../../types';
+import { Property as PropertyType, Rate } from '../../types';
 import useAnalytics from '../../hooks/analytics';
 import { formatRooms } from '../../formatters/rooms';
 import { formatHouseType } from '../../formatters/house-type';
@@ -25,6 +25,7 @@ type Props = {
   shortlisted: boolean;
   onShortlist: (property: PropertyType) => void;
   isLoading?: boolean;
+  rates: Rate[];
 }
 
 const CONTACT_TEXT_TEMPLATE_RU = `Привет!%0AУвидел объявление на @{{botName}}%0AСкажи, пожалуйста, актуально ли%3F%0A{{link}}`;
@@ -43,7 +44,7 @@ const buildPropertyUrl = (property: PropertyType) => {
   return `${APP_URL}?startapp=propertyId_${property?.id}`;
 }
 
-const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist }) => {
+const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist, rates }) => {
   const { track } = useAnalytics();
   const os = useOs();
   const houseType = formatHouseType(property?.house_type ?? '');
@@ -88,7 +89,12 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
       location: formatLocation(property?.location),
       houseType: formatHouseType(property.house_type),
       rooms: formatRooms(property.rooms),
-      price: formatMoney(property.price, 'IDR'),
+      price: formatMoney({
+        value: property.price,
+        currency: property.currency,
+        priceType: property.price_type,
+        rates,
+      }),
     });
 
     const fullUrl = `https://t.me/share/url?url=${url}&text=${text}`;
@@ -186,7 +192,14 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
           </Title>
           <Title order={4} style={{ marginTop: '4px', marginBottom: '9px' }}>
             <Text style={{ fontWeight: 'bold' }}>
-              {formatMoney(property.price, 'IDR')}
+              {
+                formatMoney({
+                  value: property.price,
+                  currency: property.currency,
+                  priceType: property.price_type,
+                  rates,
+                })
+              }
               &nbsp;&nbsp;•&nbsp;&nbsp;
               {formatRooms(property.rooms)}
             </Text>

@@ -7,7 +7,7 @@ import {
 } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import { IconHeart, IconHeartFilled } from '@tabler/icons-react';
-import { Property } from '../../types';
+import { Property, Rate } from '../../types';
 import { formatMoney } from '../../formatters/money';
 import { formatRooms } from '../../formatters/rooms';
 import { formatDate } from '../../formatters/date';
@@ -18,9 +18,10 @@ type Props = {
   shortlisted: boolean;
   onShortlist: (property: Property) => void;
   onClick: (property: Property) => void;
+  rates: Rate[];
 }
 
-const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }) => {
+const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick, rates }) => {
   const handleShortlist = useCallback((e: SyntheticEvent) => {
     e.stopPropagation();
     onShortlist(property)
@@ -71,9 +72,15 @@ const PropertyItem: FC<Props> = ({ property, shortlisted, onShortlist, onClick }
 
       <Group style={{ justifyContent: 'space-between', paddingBottom: '0px' }}>
         <Text style={{ color: '#222222', fontWeight: 'bold', fontSize: '17px' }}>
-          {formatMoney(property.price, 'IDR')}
+          {
+            formatMoney({
+              value: property.price,
+              currency: property.currency,
+              priceType: property.price_type,
+              rates,
+            })
+          }
         </Text>
-
         {
           (property.posted_at) && (
             <Text style={{ color: '#222222', fontSize: '12px' }}>
