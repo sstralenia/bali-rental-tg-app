@@ -1,7 +1,7 @@
-import { FC, useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect, useMemo } from 'react';
 import { Container, Box, Title, Text, Group, Button, LoadingOverlay, ActionIcon, Stack } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
-import { useOs } from '@mantine/hooks';
+import { useDisclosure, useOs } from '@mantine/hooks';
 import { IconChevronLeft, IconUpload, IconHeart, IconHeartFilled } from '@tabler/icons-react';
 import { Property as PropertyType, Rate } from '../../types';
 import useAnalytics from '../../hooks/analytics';
@@ -12,6 +12,8 @@ import { formatDate } from '../../formatters/date';
 import { formatCity } from '../../formatters/city';
 import { formatString } from '../../utils/string';
 import { formatLocation } from '../../formatters/location';
+import WarningModal from './warning-modal';
+import { createPortal } from 'react-dom';
 
 const {
   VITE_APP_URL: APP_URL,
@@ -45,6 +47,7 @@ const buildPropertyUrl = (property: PropertyType) => {
 }
 
 const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist, rates }) => {
+  const [isWarningModalOpened, { open: openWarningModal, close: closeWarningModal }] = useDisclosure(false);
   const { track } = useAnalytics();
   const os = useOs();
   const houseType = formatHouseType(property?.house_type ?? '');
@@ -60,6 +63,12 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
   }, [property?.id, track]);
 
   const handleContact = () => {
+    openWarningModal();
+  };
+
+  const handleConfirm = useCallback(() => {
+    closeWarningModal();
+
     track('property_contacted', { propertyId: property?.id });
 
     const template = os === 'macos' ? CONTACT_TEXT_TEMPLATE_EN : CONTACT_TEXT_TEMPLATE_RU;
@@ -75,7 +84,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     } else {
       Telegram.WebApp.openLink(property?.link ?? '', { try_instant_view: true });
     }
-  };
+  }, [property, os, track]);
 
   const handleShare = useCallback(() => {
     if (!property) {
@@ -239,6 +248,12 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
           </Button>
         </Stack>
       </Box>
+
+      <WarningModal
+        opened={isWarningModalOpened}
+        onConfirm={handleConfirm}
+        onClose={closeWarningModal}
+      />
     </Container>
   );
 }
