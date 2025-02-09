@@ -12,7 +12,8 @@ import { formatDate } from '../../formatters/date';
 import { formatCity } from '../../formatters/city';
 import { formatString } from '../../utils/string';
 import { formatLocation } from '../../formatters/location';
-import WarningModal from './warning-modal';
+import ContactWarningModal from './contact-warning-modal';
+import OrderWarningModal from './order-warning-modal';
 
 const {
   VITE_APP_URL: APP_URL,
@@ -46,7 +47,18 @@ const buildPropertyUrl = (property: PropertyType) => {
 }
 
 const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted, onShortlist, rates }) => {
-  const [isWarningModalOpened, { open: openWarningModal, close: closeWarningModal }] = useDisclosure(false);
+  const [
+    isContactWarningModalOpened, {
+      open: openContactWarningModal,
+      close: closeContactWarningModal
+    }
+  ] = useDisclosure(false);
+  const [
+    isOrderWarningModalOpened, {
+      open: openOrderWarningModal,
+      close: closeOrderWarningModal
+    }
+  ] = useDisclosure(false);
   const { track } = useAnalytics();
   const os = useOs();
   const houseType = formatHouseType(property?.house_type ?? '');
@@ -62,11 +74,11 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
   }, [property?.id, track]);
 
   const handleContact = () => {
-    openWarningModal();
+    openContactWarningModal();
   };
 
-  const handleConfirm = useCallback(() => {
-    closeWarningModal();
+  const handleContactConfirm = useCallback(() => {
+    closeContactWarningModal();
 
     track('property_contacted', { propertyId: property?.id });
 
@@ -84,6 +96,28 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
       Telegram.WebApp.openLink(property?.link ?? '', { try_instant_view: true });
     }
   }, [property, os, track]);
+
+  const handleOrderView = useCallback(() => {
+    openOrderWarningModal();
+  }, []);
+
+  const handleOrderConfirm = useCallback(() => {
+    if (!property) {
+      return;
+    }
+
+    track('property_ordered_view', { propertyId: property?.id });
+
+    const propertyUrl = `${APP_URL}?startapp=propertyId_${property?.id}`;
+    const template = os === 'macos' ? ORDER_VIEW_TEXT_TEMPLATE_EN : ORDER_VIEW_TEXT_TEMPLATE_RU;
+
+    const text = formatString(template, {
+      location: formatCity(property?.city),
+      link: encodeURIComponent(propertyUrl),
+    });
+
+    Telegram.WebApp.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}?text=${text}`);
+  }, [property, track]);
 
   const handleShare = useCallback(() => {
     if (!property) {
@@ -108,24 +142,6 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     const fullUrl = `https://t.me/share/url?url=${url}&text=${text}`;
 
     window.location.href = fullUrl;
-  }, [property, track]);
-
-  const handleOrderView = useCallback(() => {
-    if (!property) {
-      return;
-    }
-
-    track('property_ordered_view', { propertyId: property?.id });
-
-    const propertyUrl = `${APP_URL}?startapp=propertyId_${property?.id}`;
-    const template = os === 'macos' ? ORDER_VIEW_TEXT_TEMPLATE_EN : ORDER_VIEW_TEXT_TEMPLATE_RU;
-
-    const text = formatString(template, {
-      location: formatCity(property?.city),
-      link: encodeURIComponent(propertyUrl),
-    });
-
-    Telegram.WebApp.openTelegramLink(`https://t.me/${SUPPORT_USERNAME}?text=${text}`);
   }, [property, track]);
 
   if (isLoading || !property) {
@@ -225,7 +241,6 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
           )
         }
 
-
         <Stack mt="sm" mb="xs">
           {
             canContact && (
@@ -249,10 +264,15 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
         </Stack>
       </Box>
 
-      <WarningModal
-        opened={isWarningModalOpened}
-        onConfirm={handleConfirm}
-        onClose={closeWarningModal}
+      <ContactWarningModal
+        opened={isContactWarningModalOpened}
+        onConfirm={handleContactConfirm}
+        onClose={closeContactWarningModal}
+      />
+      <OrderWarningModal
+        opened={isOrderWarningModalOpened}
+        onConfirm={handleOrderConfirm}
+        onClose={closeOrderWarningModal}
       />
     </Container>
   );

@@ -9,8 +9,12 @@ body[data-scroll-locked] {
 }
 
 .mantine-Modal-inner {
-  padding-top: var(--tg-safe-area-inset-top, 0px);
+  padding-top: var(--tg-content-safe-area-inset-top, 0px);
   background-color: var(--mantine-color-body);
   left: 0;
   right: 0;
+}
+
+.mantine-List-itemWrapper {
+  width: 95%;
 }
