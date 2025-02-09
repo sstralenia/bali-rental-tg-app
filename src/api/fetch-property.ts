@@ -32,7 +32,7 @@ type FetchPropertyResponse<TableName extends string> = {
 }
 
 export async function fetchProperty(id: string): Promise<Property | null> {
-  const result = await apolloClient.query<FetchPropertyResponse>({
+  const result = await apolloClient.query<FetchPropertyResponse<typeof tableName>>({
     query: FETCH_PROPERTY_QUERY,
     variables: {
       where: {

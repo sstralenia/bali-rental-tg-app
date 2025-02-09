@@ -95,7 +95,7 @@ const FiltersModal: FC<Props> = ({ opened, filters: initialFilters, onClose, onA
             size="xs"
             color="#767676"
           >
-            Радиус поиска: 6км
+            Радиус поиска: 6 км
           </Text>
         </Stack>
         <Radio.Group

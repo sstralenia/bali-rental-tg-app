@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { Container, Box, Title, Text, Group, Button, LoadingOverlay, ActionIcon, Stack } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import { useDisclosure, useOs } from '@mantine/hooks';
@@ -13,7 +13,6 @@ import { formatCity } from '../../formatters/city';
 import { formatString } from '../../utils/string';
 import { formatLocation } from '../../formatters/location';
 import WarningModal from './warning-modal';
-import { createPortal } from 'react-dom';
 
 const {
   VITE_APP_URL: APP_URL,
@@ -31,7 +30,7 @@ type Props = {
 }
 
 const CONTACT_TEXT_TEMPLATE_RU = `Привет!%0AУвидел объявление на @{{botName}}%0AСкажи, пожалуйста, актуально ли%3F%0A{{link}}`;
-const CONTACT_TEXT_TEMPLATE_EN = `Hello!%0AI saw an ad on @{{botName}}%0APlease tell me if it's still available%3F%0A{{link}}`;
+const CONTACT_TEXT_TEMPLATE_EN = `Hello!%0AI saw an ad on @{{botName}}%0APlease tell me if it is still available%3F%0A{{link}}`;
 
 const ORDER_VIEW_TEXT_TEMPLATE_RU = `Привет!%0AХотел бы заказать просмотр объекта.%0AЛокация: {{location}}%0AСсылка: {{link}}`;
 const ORDER_VIEW_TEXT_TEMPLATE_EN = `Hello!%0AI want to order a viewing of the property.%0ALocation: {{location}}%0ALink: {{link}}`;
@@ -243,6 +242,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
           <Button
             onClick={handleOrderView}
             color="#FF5A5F"
+            display={'none'}
           >
             Заказать просмотр
           </Button>

@@ -39,7 +39,7 @@ function convertToBasicCurrency(value: number, currency: string, rates: Rate[]):
 }
 
 function formatType(priceType: PriceType | null): string {
-  const basePart = 'МЛН';
+  const basePart = 'млн';
 
   switch (priceType) {
     case PriceType.DAILY:

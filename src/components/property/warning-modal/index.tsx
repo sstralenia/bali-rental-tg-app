@@ -3,15 +3,12 @@ import {
   Container,
   Group,
   Title,
-  Box,
   List,
   Text,
   Button,
   Modal,
 } from '@mantine/core';
-import { IconX } from '@tabler/icons-react';
-import { FC, useEffect } from 'react';
-import './styles.css';
+import { FC } from 'react';
 
 const {
   VITE_SUPPORT_USERNAME: SUPPORT_USERNAME,
@@ -47,6 +44,7 @@ const WarningModal: FC<Props> = ({ opened, onClose, onConfirm }) => {
       fullScreen
       radius={0}
       transitionProps={{ transition: 'fade', duration: 200 }}
+      pt={'lg'}
     >
       <Container p='8px' pb='md'>
         <Stack>
@@ -66,7 +64,7 @@ const WarningModal: FC<Props> = ({ opened, onClose, onConfirm }) => {
                 <b>Проверяйте информацию:&nbsp;</b><br/>Убедитесь, что данные о недвижимости/арендодателе достоверны.
               </List.Item>
               <List.Item mb='xs'>
-                <b>Учтите:&nbsp;</b><br/>Администрация приложения не связана с лицами, публикующими объявления.
+                <b>Учтите:&nbsp;</b><br/>Администрация приложения <b>не связана</b> с лицами, публикующими объявления.
               </List.Item>
               <List.Item mb='xs'>
                 <b>Сообщайте:&nbsp;</b><br/>Если заметите подозрительную активность, пишите в поддержку <a href={supportLink} target="_blank">@HomesFinderSupport</a>
@@ -74,7 +72,7 @@ const WarningModal: FC<Props> = ({ opened, onClose, onConfirm }) => {
             </List>
 
             <Text>
-              Будь внимателен(льн), и если возникнут сомнения, обязательно обращайтесь в <a href={supportLink} target="_blank">@HomesFinderSupport</a>!
+              Будь внимателен, и если возникнут сомнения, обязательно обращайтесь в <a href={supportLink} target="_blank">@HomesFinderSupport</a>!
             </Text>
           </Group>
         </Stack>
