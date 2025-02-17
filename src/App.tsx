@@ -40,9 +40,19 @@ function App() {
       <StoreProvider>
         <BrowserRouter basename={import.meta.env.VITE_BASE_URL}>
           <Routes>
-            <Route path='/' element={<SearchPage/>} index/>
-            <Route path='/shortlisted' element={<ShortlistPage/>} />
-            <Route path='/property/:propertyId' element={<PropertyPage/>} />
+            <Route
+              path='/'
+              element={<SearchPage/>}
+              index
+            />
+            <Route
+              path='/shortlisted'
+              element={<ShortlistPage/>}
+            />
+            <Route
+              path='/property/:propertyId'
+              element={<PropertyPage/>}
+            />
           </Routes>
         </BrowserRouter>
       </StoreProvider>
