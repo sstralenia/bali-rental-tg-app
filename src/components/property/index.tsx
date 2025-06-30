@@ -66,6 +66,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     (property?.source === 'telegram' && property?.username) ||
     (property?.source === 'facebook' && property?.link);
   const isLaptop = ['windows', 'macos', 'linux'].includes(os);
+  const templateLang: 'en' | 'ru' = 'en';
 
   useEffect(() => {
     if (property?.id) {
@@ -82,7 +83,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
 
     track('property_contacted', { propertyId: property?.id });
 
-    const template = os === 'macos' ? CONTACT_TEXT_TEMPLATE_EN : CONTACT_TEXT_TEMPLATE_RU;
+    const template = templateLang === 'en' ? CONTACT_TEXT_TEMPLATE_EN : CONTACT_TEXT_TEMPLATE_RU;
 
     if (property?.source === 'telegram') {
       const text = formatString(template, {
@@ -109,7 +110,7 @@ const Property: FC<Props> = ({ onBack, property, isLoading = false, shortlisted,
     track('property_ordered_view', { propertyId: property?.id });
 
     const propertyUrl = `${APP_URL}?startapp=propertyId_${property?.id}`;
-    const template = os === 'macos' ? ORDER_VIEW_TEXT_TEMPLATE_EN : ORDER_VIEW_TEXT_TEMPLATE_RU;
+    const template = templateLang === 'en' ? ORDER_VIEW_TEXT_TEMPLATE_EN : ORDER_VIEW_TEXT_TEMPLATE_RU;
 
     const text = formatString(template, {
       location: formatCity(property?.city),
